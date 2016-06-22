@@ -128,7 +128,9 @@ function registerWithSwf({
     return Promise.all([
         registerWorkflowDefinitions(),
         registerActivityTaskDefinitions(),
-    ]);
+    ]).then(() => {
+        log('Registration complete.');
+    });
 }
 
 module.exports = {

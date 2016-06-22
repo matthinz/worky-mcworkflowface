@@ -1,4 +1,5 @@
 const debug = require('debug');
+const log = debug('swf');
 
 const { createTaskPoller } = require('../util/poller');
 
@@ -34,6 +35,10 @@ function pollForAndRunActivityTasks({
 
     poller.on('error', (err) => emitter.emit('error', err));
 
+    poller.on('started', () => log('Polling for activity tasks...'));
+
+    poller.on('timedOut', () => log('Activity task long polling timed out.'));
+
     poller.on('task', (task, continuePolling) => {
         // Logging is done in the context of a task being executed
         const {
@@ -42,12 +47,12 @@ function pollForAndRunActivityTasks({
             activityType: { name },
         } = task;
 
-        const log = debug(`swf:${workflowId}:${name}:${activityId}`);
-        log('Received activity task');
+        const workflowLog = debug(`swf:${workflowId}:${name}:${activityId}`);
+        workflowLog('Received activity task');
 
         resolveActivityTaskFunction(task, activityTaskDefinitions)
         .then((func) => {
-            log('Running activity task function');
+            workflowLog('Running activity task function');
             return runActivityTaskFunction(task, func);
         })
         .then(
@@ -55,11 +60,11 @@ function pollForAndRunActivityTasks({
             createActivityFailureResponder(swfClient, task.taskToken)
         )
         .then(() => {
-            log('Activity completed.');
+            workflowLog('Activity completed.');
             continuePolling();
         })
         .catch(err => {
-            log('Activity failed: %s', err.message);
+            workflowLog('Activity failed: %s', err.message);
             emitter.emit('error', err);
             continuePolling();
         });

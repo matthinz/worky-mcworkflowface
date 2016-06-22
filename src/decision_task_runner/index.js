@@ -1,4 +1,5 @@
 const debug = require('debug');
+const log = debug('swf');
 
 const { createTaskPoller } = require('../util/poller');
 
@@ -45,17 +46,21 @@ function pollForAndRunDecisionTasks(options) {
     // Forward polling errors to the main emitter.
     poller.on('error', (err) => emitter.emit('error', err));
 
+    poller.on('started', () => log('Polling for decision tasks...'));
+
+    poller.on('timedOut', () => log('Decision task long polling timed out.'));
+
     poller.on('task', (task, continuePolling) => {
         const {
             events,
             workflowExecution: { workflowId },
         } = task;
 
-        const log = debug(`swf:${workflowId}:decider`);
+        const workflowLog = debug(`swf:${workflowId}:decider`);
 
         const mostRecentEvent = getMostRecentNonDecisionEvent(events) || {};
 
-        log(
+        workflowLog(
             'Received decision task with %d event(s). Most recent non-decision event: %s (%s)',
             events.length,
             mostRecentEvent.eventType,
@@ -65,14 +70,14 @@ function pollForAndRunDecisionTasks(options) {
         const handleCompletedDecisionTask = createDecisionTaskCompletedResponder(swfClient, task);
 
         resolveDeciderFunction(task, workflowDefinitions)
-            .then(deciderFunc => runDecider(task, deciderFunc, log, options))
+            .then(deciderFunc => runDecider(task, deciderFunc, workflowLog, options))
             .then(handleCompletedDecisionTask)
             .then((decisions) => {
-                log('Decision task completed: %s', summarizeDecisions(decisions));
+                workflowLog('Decision task completed: %s', summarizeDecisions(decisions));
                 continuePolling();
             })
             .catch(err => {
-                log('Decision task failed: %s.', err.message);
+                workflowLog('Decision task failed: %s.', err.message);
                 emitter.emit('error', err);
                 continuePolling();
             });
