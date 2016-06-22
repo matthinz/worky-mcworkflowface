@@ -9,36 +9,65 @@ function createTaskPoller({
     let stopRequested = false;
 
     function doPoll() {
-        if (stopRequested) {
-            poller.emit('stopped');
-            return;
-        }
         poller.emit('started');
-        swfClient[method](params, (err, task) => {
-            if (err) {
-                poller.emit('error', err);
-                process.nextTick(doPoll);
+
+        let task = null;
+        let nextPageToken = null;
+
+        function fetchNextPage() {
+            if (stopRequested) {
+                poller.emit('stopped');
                 return;
             }
 
-            if (!task.taskToken) {
-                // A missing taskToken indicates that long polling timed out and
-                // we need to start over.
-                poller.emit('timedOut');
-                process.nextTick(doPoll);
-                return;
+            let actualParams = params;
+            if (nextPageToken) {
+                actualParams = Object.assign({}, params, { nextPageToken });
             }
 
-            // TODO: If task.nextPageToken is set, it means we need to keep
-            //       calling client.pollForDecisionTask() to obtain the full
-            //       list of events.
+            swfClient[method](actualParams, (err, taskPage) => {
+                if (err) {
+                    poller.emit('error', err);
+                    process.nextTick(doPoll);
+                    return;
+                }
 
-            function continuePolling() {
-                process.nextTick(doPoll);
-            }
+                if (!taskPage.taskToken) {
+                    // A missing taskToken indicates that long polling timed out and
+                    // we need to start over.
+                    poller.emit('timedOut');
+                    process.nextTick(doPoll);
+                    return;
+                }
 
-            poller.emit('task', task, continuePolling);
-        });
+                // Merge this page into the task we are building that we will eventually emit.
+                if (task) {
+                    task.events = [
+                        ...task.events,
+                        ...taskPage.events,
+                    ];
+                } else {
+                    task = Object.assign({}, taskPage);
+                }
+
+                if (taskPage.nextPageToken) {
+                    // There is another page to fetch to ensure we get all events.
+                    nextPageToken = taskPage.nextPageToken;
+                    process.nextTick(fetchNextPage);
+                    return;
+                }
+
+                // We are ready to emit this task and start all over again.
+                function continuePolling() {
+                    process.nextTick(doPoll);
+                }
+                delete task.nextPageToken;
+
+                poller.emit('task', task, continuePolling);
+            });
+        }
+
+        fetchNextPage();
     }
 
     function stop() {
