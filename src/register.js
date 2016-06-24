@@ -49,6 +49,8 @@ function registerWithSwf({
                         return;
                     }
 
+                    log('%s: Error registering %s - %s', method, name, err);
+
                     reject(err);
                     return;
                 }
