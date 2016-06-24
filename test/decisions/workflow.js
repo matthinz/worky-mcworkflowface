@@ -5,14 +5,36 @@ const { createDecisionFunctions } = require('../../src/decisions');
 describe('workflow decision helpers', () => {
     const {
         completeWorkflowExecution,
+        continueAsNewWorkflowExecution,
         failWorkflowExecution,
-    } = createDecisionFunctions({});
+    } = createDecisionFunctions({
+        taskList: 'foo-task-list',
+    });
 
-    it('marks workflow as completed', () => {
-        expect(completeWorkflowExecution()).to.deep.equal({
-            decisionType: 'CompleteWorkflowExecution',
+    describe('completeWorkflowExecution()', () => {
+        it('marks workflow as completed', () => {
+            expect(completeWorkflowExecution()).to.deep.equal({
+                decisionType: 'CompleteWorkflowExecution',
+            });
         });
     });
+
+    describe('continueAsNewWorkflowExecution()', () => {
+        it('accepts input', () => {
+            const decision = continueAsNewWorkflowExecution({ foo: 'bar' });
+            expect(decision).to.have.property('continueAsNewWorkflowExecutionDecisionAttributes');
+            const attrs = decision.continueAsNewWorkflowExecutionDecisionAttributes;
+            expect(attrs).to.have.property('input').equal('{"foo":"bar"}');
+        });
+        it('uses taskList from options', () => {
+            const decision = continueAsNewWorkflowExecution({ foo: 'bar' });
+            const attrs = decision.continueAsNewWorkflowExecutionDecisionAttributes;
+            expect(attrs).to.have.property('taskList').deep.equal({
+                name: 'foo-task-list',
+            });
+        });
+    });
+
     describe('failWorkflowExecution()', () => {
         it('supports Errors', () => {
             const err = new Error('Some error message');

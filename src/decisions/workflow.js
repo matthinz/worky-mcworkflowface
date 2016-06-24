@@ -1,32 +1,36 @@
 const { formatErrorForSwf } = require('../util/format_error');
 
-function completeWorkflowExecution() {
-    return {
-        decisionType: 'CompleteWorkflowExecution',
-    };
-}
+function createWorkflowDecisionFunctions(options) {
+    function completeWorkflowExecution() {
+        return {
+            decisionType: 'CompleteWorkflowExecution',
+        };
+    }
 
-function continueAsNewWorkflowExecution(input) {
-    return {
-        decisionType: 'ContinueAsNewWorkflowExecution',
-        continueAsNewWorkflowExecutionDecisionAttributes: {
-            input,
-            taskList: {
-                name: 'worker',
+    function continueAsNewWorkflowExecution(input) {
+        return {
+            decisionType: 'ContinueAsNewWorkflowExecution',
+            continueAsNewWorkflowExecutionDecisionAttributes: {
+                input: JSON.stringify(input),
+                taskList: {
+                    name: options.taskList,
+                },
             },
-        },
-    };
-}
+        };
+    }
 
-function failWorkflowExecution(err) {
+    function failWorkflowExecution(err) {
+        return {
+            decisionType: 'FailWorkflowExecution',
+            failWorkflowExecutionDecisionAttributes: formatErrorForSwf(err),
+        };
+    }
+
     return {
-        decisionType: 'FailWorkflowExecution',
-        failWorkflowExecutionDecisionAttributes: formatErrorForSwf(err),
+        completeWorkflowExecution,
+        continueAsNewWorkflowExecution,
+        failWorkflowExecution,
     };
 }
 
-module.exports = {
-    completeWorkflowExecution,
-    continueAsNewWorkflowExecution,
-    failWorkflowExecution,
-};
+module.exports = createWorkflowDecisionFunctions;
