@@ -13,11 +13,14 @@ describe('Activity Task Runner', () => {
         const task = {
             input: JSON.stringify(originalInput),
         };
+        let called = 0;
         function func(input) {
+            called++;
             expect(input).to.deep.equal(originalInput);
             return Promise.resolve().then(() => originalResult);
         }
         return runActivityTaskFunction(task, func).then(result => {
+            expect(called).to.equal(1);
             expect(result).to.be.a.string;
             expect(JSON.parse(result)).to.deep.equal(originalResult);
         });
