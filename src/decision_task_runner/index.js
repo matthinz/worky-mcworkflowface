@@ -73,7 +73,10 @@ function pollForAndRunDecisionTasks(options) {
             .then(deciderFunc => runDecider(task, deciderFunc, workflowLog, options))
             .then(handleCompletedDecisionTask)
             .then((decisions) => {
-                workflowLog('Decision task completed: %s', summarizeDecisions(decisions));
+                workflowLog(
+                    'Decision task completed: %s',
+                    decisions.length ? summarizeDecisions(decisions) : '(no decisions)'
+                );
                 continuePolling();
             })
             .catch(err => {
