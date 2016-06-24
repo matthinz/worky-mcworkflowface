@@ -106,13 +106,17 @@ function registerWithSwf({
     function registerActivityTaskVersion({ name, version, settings }) {
         const params = Object.assign(
             {},
-            settings || DEFAULT_ACTIVITY_TASK_SETTINGS,
+            DEFAULT_ACTIVITY_TASK_SETTINGS,
+            settings || {},
             {
                 domain,
                 name,
                 version,
             }
         );
+
+        convertIntsToStrings(params);
+
         return doRegistration({
             name: `${name}:${version}`,
             params,
