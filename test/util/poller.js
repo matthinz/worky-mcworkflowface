@@ -134,7 +134,7 @@ describe('poller', () => {
         let taskFired = false;
 
         poller.on('error', done);
-        poller.on('timedOut', () => done(new Error("Timed out.")));
+        poller.on('timedOut', () => done(new Error('Timed out.')));
         poller.on('task', (task) => {
             assert(!taskFired, 'already recieved task');
             expect(task).to.deep.equal({
