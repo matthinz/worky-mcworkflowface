@@ -1,3 +1,5 @@
+const JSONish = require('../../util/jsonish');
+
 module.exports = {
     WorkflowExecutionSignaled(event, state, items) {
         const attrs = event.workflowExecutionSignaledEventAttributes;
@@ -5,7 +7,7 @@ module.exports = {
             type: 'signal',
             createdAt: new Date(event.eventTimestamp),
             signalName: attrs.signalName,
-            input: attrs.input,
+            input: JSONish.parse(attrs.input),
         };
         items.push(signalItem);
     },

@@ -1,3 +1,5 @@
+const JSONish = require('../../util/jsonish');
+
 /* eslint-disable no-param-reassign */
 module.exports = {
     WorkflowExecutionStarted(event, state, items) {
@@ -6,7 +8,7 @@ module.exports = {
             type: 'workflow',
             started: true,
             startedAt: new Date(event.eventTimestamp),
-            input: attrs.input,
+            input: JSONish.parse(attrs.input),
         };
         state.workflowItem = workflowItem;
         items.push(workflowItem);

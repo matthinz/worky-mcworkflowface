@@ -7,7 +7,7 @@ const signaledEvent = {
     eventTimestamp: '2016-06-15T20:18:55.502Z',
     workflowExecutionSignaledEventAttributes: {
         signalName: 'FooSignal',
-        input: 'some input',
+        input: '{"foo":"bar"}',
     },
 };
 
@@ -20,7 +20,9 @@ describe('Event Distillation - Signals', () => {
             type: 'signal',
             createdAt: '2016-06-15T20:18:55.502Z',
             signalName: 'FooSignal',
-            input: 'some input',
+            input: {
+                foo: 'bar',
+            },
         });
     });
 });

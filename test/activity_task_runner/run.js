@@ -49,7 +49,7 @@ describe('Activity Task Runner', () => {
         const task = {};
         const func = () => null;
         return runActivityTaskFunction(task, func).then(result => {
-            expect(result).to.equal('');
+            expect(result).to.equal('null');
         });
     });
     it('handles tasks returning empty strings', () => {

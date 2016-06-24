@@ -8,7 +8,7 @@ describe('Event Log Distillation - Workflow Type', () => {
                 eventTimestamp: '2016-06-08T21:58:42.051Z',
                 eventType: 'WorkflowExecutionStarted',
                 workflowExecutionStartedEventAttributes: {
-                    input: 'FooBar',
+                    input: '{"foo":"bar"}',
                 },
             },
             {
@@ -26,7 +26,7 @@ describe('Event Log Distillation - Workflow Type', () => {
         expect(ev).to.have.property('startedAt');
         expect(ev.startedAt.toISOString()).to.equal('2016-06-08T21:58:42.051Z');
 
-        expect(ev).to.have.property('input', 'FooBar');
+        expect(ev).to.have.property('input').deep.equal({ foo: 'bar' });
 
         expect(ev).not.to.have.property('completed');
         expect(ev).not.to.have.property('error');
@@ -37,7 +37,7 @@ describe('Event Log Distillation - Workflow Type', () => {
                 eventTimestamp: '2016-06-08T21:58:42.051Z',
                 eventType: 'WorkflowExecutionStarted',
                 workflowExecutionStartedEventAttributes: {
-                    input: 'FooBar',
+                    input: '{"foo":"bar"}',
                 },
             },
             {
@@ -66,7 +66,7 @@ describe('Event Log Distillation - Workflow Type', () => {
         expect(ev).to.have.property('finishedAt');
         expect(ev.finishedAt.toISOString()).to.equal('2016-06-09T21:58:42.051Z');
 
-        expect(ev).to.have.property('input', 'FooBar');
+        expect(ev).to.have.property('input').deep.equal({ foo: 'bar' });
         expect(ev).to.have.property('result', 'BazBat');
 
         expect(ev).not.to.have.property('error');
