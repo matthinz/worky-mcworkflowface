@@ -1,6 +1,6 @@
 const { formatErrorForSwf } = require('../util/format_error');
 
-function completeWorkflow() {
+function completeWorkflowExecution() {
     return {
         decisionType: 'CompleteWorkflowExecution',
     };
@@ -26,7 +26,7 @@ function failWorkflowExecution(err) {
 }
 
 module.exports = {
-    completeWorkflow,
+    completeWorkflowExecution,
     continueAsNewWorkflowExecution,
     failWorkflowExecution,
 };

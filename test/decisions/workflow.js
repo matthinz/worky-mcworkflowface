@@ -4,12 +4,12 @@ const { createDecisionFunctions } = require('../../src/decisions');
 
 describe('workflow decision helpers', () => {
     const {
-        completeWorkflow,
+        completeWorkflowExecution,
         failWorkflowExecution,
     } = createDecisionFunctions({});
 
     it('marks workflow as completed', () => {
-        expect(completeWorkflow()).to.deep.equal({
+        expect(completeWorkflowExecution()).to.deep.equal({
             decisionType: 'CompleteWorkflowExecution',
         });
     });
