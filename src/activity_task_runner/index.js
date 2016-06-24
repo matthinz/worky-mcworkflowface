@@ -64,7 +64,7 @@ function pollForAndRunActivityTasks({
             continuePolling();
         })
         .catch(err => {
-            workflowLog('Activity failed: %s', err.message);
+            workflowLog('Activity failed: %s (code: %s)', err.message, err.code);
             emitter.emit('error', err);
             continuePolling();
         });
