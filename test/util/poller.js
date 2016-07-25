@@ -48,6 +48,11 @@ describe('poller', () => {
                 });
             });
         },
+        succeedingAfterAWhilePollMethod(params, cb) {
+            setTimeout(() => {
+                fakeClient.succeedingPollMethod(params, cb);
+            }, 500);
+        },
         multiPageMethod(params, cb) {
             if (params.nextPageToken) {
                 expect(pagesToReturn.length).to.be.greaterThan(0);
@@ -152,5 +157,32 @@ describe('poller', () => {
             setTimeout(done, 300);
         });
         poller.start();
+    });
+    it('returns a Promise from stop()', () => {
+        const poller = createTaskPoller({
+            swfClient: fakeClient,
+            method: 'succeedingAfterAWhilePollMethod',
+            params: {},
+        });
+
+        const tasksReceived = [];
+        let stopEvents = 0;
+
+        poller.on('task', (task, continuePolling) => {
+            tasksReceived.push(task);
+            continuePolling();
+        });
+
+        poller.on('stopped', () => {
+            stopEvents++;
+        });
+
+        poller.start();
+
+        return poller.stop().then(() => {
+            expect(poller.isRunning()).to.be.false;
+            expect(tasksReceived).to.have.length(1);
+            expect(stopEvents).to.equal(1);
+        });
     });
 });

@@ -1,4 +1,5 @@
 const { EventEmitter } = require('events');
+const NOOP = () => {};
 
 function createTaskPoller({
     swfClient,
@@ -6,20 +7,37 @@ function createTaskPoller({
     params,
 }) {
     const poller = new EventEmitter();
-    let stopRequested = false;
+    let running = false;
+    let stopPromise = Promise.resolve();
+    let resolveStopPromise = null;
+
+    function checkForStop() {
+        if (running) {
+            return false;
+        }
+
+        // We need to process a pending stop() call.
+        if (typeof resolveStopPromise === 'function') {
+            resolveStopPromise();
+            resolveStopPromise = null;
+        }
+
+        poller.emit('stopped');
+
+        return true;
+    }
 
     function doPoll() {
+        if (checkForStop()) {
+            return;
+        }
+
         poller.emit('started');
 
         let task = null;
         let nextPageToken = null;
 
         function fetchNextPage() {
-            if (stopRequested) {
-                poller.emit('stopped');
-                return;
-            }
-
             let actualParams = params;
             if (nextPageToken) {
                 actualParams = Object.assign({}, params, { nextPageToken });
@@ -71,10 +89,30 @@ function createTaskPoller({
     }
 
     function stop() {
-        stopRequested = true;
+        if (running) {
+            running = false;
+            stopPromise = new Promise((resolve) => {
+                resolveStopPromise = resolve;
+            });
+        }
+
+        return stopPromise;
     }
 
-    poller.start = doPoll;
+    function start() {
+        if (!running) {
+            running = true;
+            stopPromise = Promise.resolve();
+            doPoll();
+        }
+    }
+
+    function isRunning() {
+        return running;
+    }
+
+    poller.isRunning = isRunning;
+    poller.start = start;
     poller.stop = stop;
 
     return poller;
