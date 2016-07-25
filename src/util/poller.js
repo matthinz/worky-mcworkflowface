@@ -1,5 +1,4 @@
 const { EventEmitter } = require('events');
-const NOOP = () => {};
 
 function createTaskPoller({
     swfClient,
