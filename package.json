@@ -1,6 +1,6 @@
 {
   "name": "worky-mcworkflowface",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Amazon Simple Workflow Service (SWF) client library.",
   "main": "src/index.js",
   "scripts": {
