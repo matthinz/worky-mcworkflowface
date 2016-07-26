@@ -1,4 +1,5 @@
 const { expect, assert } = require('chai');
+const { EventEmitter } = require('events');
 
 const { createTaskPoller } = require('../../src/util/poller');
 
@@ -29,45 +30,71 @@ describe('poller', () => {
         },
     ];
 
+    class MockAwsRequest extends EventEmitter {
+        constructor(err, data, duration = 0) {
+            super();
+            this.err = err;
+            this.data = data;
+            this.duration = duration;
+        }
+        abort() {
+            if (this.sendTimer) {
+                clearTimeout(this.sendTimer);
+                delete this.sendTimer;
+            }
+
+            const err = new Error('Request aborted by user');
+            err.code = 'RequestAbortedError';
+
+            this.emit('error', err, {});
+            this.emit('complete');
+        }
+        send() {
+            this.sendTimer = setTimeout(() => {
+                if (this.err) {
+                    // Simulate error
+                    this.emit('error', this.err, {});
+                    this.emit('complete', {});
+                } else {
+                    this.emit('success', { data: this.data }, {});
+                    this.emit('complete', {});
+                }
+            }, this.duration);
+        }
+    }
+
     const fakeClient = {
-        erroringPollMethod(params, cb) {
-            process.nextTick(() => {
-                cb(new Error('Fake error.'));
-            });
+        erroringPollMethod() {
+            return new MockAwsRequest(new Error('Fake error.'));
         },
-        succeedingPollMethod(params, cb) {
-            cb(null, {
+        succeedingPollMethod() {
+            return new MockAwsRequest(null, {
                 taskToken: 'foobarbaz',
             });
         },
-        timingOutPollMethod(params, cb) {
-            process.nextTick(() => {
-                cb(null, {
-                    // SWF docs state that taskToken will be '' if long polling times out
-                    taskToken: '',
-                });
+        timingOutPollMethod() {
+            return new MockAwsRequest(null, {
+                // SWF docs state that taskToken will be '' if long polling times out
+                taskToken: '',
             });
         },
-        succeedingAfterAWhilePollMethod(params, cb) {
-            setTimeout(() => {
-                fakeClient.succeedingPollMethod(params, cb);
+        succeedingAfterAWhilePollMethod() {
+            return new MockAwsRequest(null, {
+                taskToken: 'foobarbaz',
             }, 500);
         },
-        multiPageMethod(params, cb) {
+        multiPageMethod(params) {
             if (params.nextPageToken) {
                 expect(pagesToReturn.length).to.be.greaterThan(0);
-                process.nextTick(cb, null, pagesToReturn.shift());
-                return;
+                return new MockAwsRequest(null, pagesToReturn.shift());
             }
-
 
             // No nextPageToken, so return first page
             if (pagesToReturn.length > 0) {
-                process.nextTick(cb, null, pagesToReturn.shift());
-                return;
+                return new MockAwsRequest(null, pagesToReturn.shift());
             }
 
-            // No first page = no return.
+            throw new Error('No pages to return');
         },
     };
 
@@ -181,8 +208,28 @@ describe('poller', () => {
 
         return poller.stop().then(() => {
             expect(poller.isRunning()).to.be.false;
-            expect(tasksReceived).to.have.length(1);
+            expect(tasksReceived).to.have.length(0);
             expect(stopEvents).to.equal(1);
+        });
+    });
+    it('allows calling stop() repeatedly', () => {
+        const poller = createTaskPoller({
+            swfClient: fakeClient,
+            method: 'succeedingAfterAWhilePollMethod',
+            params: {},
+        });
+
+        poller.on('task', (task, continuePolling) => {
+            continuePolling();
+        });
+
+        const promise = poller.stop();
+        const nextPromise = poller.stop();
+        expect(promise).to.equal(nextPromise);
+
+        return promise.then(() => {
+            const promiseAfterResolve = poller.stop();
+            expect(promiseAfterResolve).to.equal(promise);
         });
     });
 });

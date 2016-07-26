@@ -87,6 +87,8 @@ function pollForAndRunDecisionTasks(options) {
     });
 
     poller.start();
+
+    return poller;
 }
 
 module.exports = { pollForAndRunDecisionTasks };

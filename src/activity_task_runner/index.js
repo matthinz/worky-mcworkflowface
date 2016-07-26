@@ -71,6 +71,8 @@ function pollForAndRunActivityTasks({
     });
 
     poller.start();
+
+    return poller;
 }
 
 module.exports = {
