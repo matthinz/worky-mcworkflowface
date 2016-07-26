@@ -126,9 +126,10 @@ function registerWithSwf({
     }
 
     function registerActivityTaskDefinitions() {
-        return activityTaskDefinitions.map((def) =>
+        const promises = activityTaskDefinitions.map((def) =>
             registerAllVersions(def, registerActivityTaskVersion)
         );
+        return Promise.all(promises);
     }
 
     return Promise.all([
