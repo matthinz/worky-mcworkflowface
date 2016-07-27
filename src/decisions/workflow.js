@@ -1,10 +1,19 @@
+const JSONish = require('../util/jsonish');
 const { formatErrorForSwf } = require('../util/format_error');
 
 function createWorkflowDecisionFunctions(options) {
-    function completeWorkflowExecution() {
-        return {
+    function completeWorkflowExecution(result) {
+        const decision = {
             decisionType: 'CompleteWorkflowExecution',
         };
+
+        if (result !== undefined) {
+            decision.completeWorkflowExecutionDecisionAttributes = {
+                result: JSONish.stringify(result),
+            };
+        }
+
+        return decision;
     }
 
     function continueAsNewWorkflowExecution(input) {

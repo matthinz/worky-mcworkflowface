@@ -17,6 +17,14 @@ describe('workflow decision helpers', () => {
                 decisionType: 'CompleteWorkflowExecution',
             });
         });
+        it('accepts a result', () => {
+            expect(completeWorkflowExecution('a result!')).to.deep.equal({
+                decisionType: 'CompleteWorkflowExecution',
+                completeWorkflowExecutionDecisionAttributes: {
+                    result: '"a result!"',
+                },
+            });
+        });
     });
 
     describe('continueAsNewWorkflowExecution()', () => {
