@@ -10,12 +10,12 @@ module.exports = {
             version: attrs.activityType.version,
             canceled: false,
             cancelRequested: false,
-            createdAt: new Date(event.eventTimestamp),
             error: {
                 code: attrs.cause,
                 message: attrs.cause,
             },
             inProgress: false,
+            started: false,
             success: false,
         };
         items.push(activityItem);
@@ -29,9 +29,9 @@ module.exports = {
             activityId: attrs.activityId,
             canceled: false,
             cancelRequested: false,
-            createdAt: new Date(event.eventTimestamp),
             inProgress: true,
             input: JSONish.parse(attrs.input),
+            started: false,
         };
         items.push(activityItem);
 
@@ -63,6 +63,8 @@ module.exports = {
     ActivityTaskStarted(event, state) {
         const attrs = event.activityTaskStartedEventAttributes;
         const activityItem = state.activityItemsByScheduledEventId[attrs.scheduledEventId];
+        activityItem.started = true;
+        activityItem.startedAt = new Date(event.eventTimestamp);
         activityItem.inProgress = true;
     },
     ActivityTaskCompleted(event, state) {

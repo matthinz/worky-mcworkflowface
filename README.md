@@ -144,23 +144,21 @@ _TODO: Support other kinds of events._
 
 #### Properties of `activity` and `workflow` Items
 
-|      Property     |   Type   |                                                              Description                                                              |
-|-------------------|----------|---------------------------------------------------------------------------------------------------------------------------------------|
-| `type`            | `String` |                                                                                                                                       |
-| `activityId`      | `String` | (`activity` type only.)                                                                                                               |
-| `name`            | `String` | Name of the activity or workflow.                                                                                                     |
-| `version`         | `String` | Version of the activity or workflow.                                                                                                  |
-| `canceled`        | `Bool`   | Whether this item's execution was canceled.                                                                                           |
-| `cancelRequested` | `Bool`   | Whether we've requested cancellation of this item's execution.                                                                        |
-| `error`           | `Object` | If execution failed, this will be an object with `code` and `message` fields describing why. Otherwise it will be `undefined`.        |
-| `inProgress`      | `Bool`   | Whether execution of this item is currently happening (that is, it has not completed or been canceled).                               |
-| `input`           | `Mixed`  | Input to the activity or workflow (passed through `JSON.parse()`).                                                                    |
-| `result`          | `Mixed`  | If execution completed successfully, this will be the activity/workflow result, fed back through `JSON.parse`. Otherwise `undefined`. |
-| `success`         | `Bool`   | Whether execution completed successfully.                                                                                             |
-| `started`         | `Bool`   | Whether execution has started.                                                                                                        |
-| `startedAt`       | `Date`   | When execution started.                                                                                                               |
-| `finished`        | `Bool`   | Whether execution has finished (successfully or not). The inverse of `inProgress`.                                                    |
-| `finishedAt`      | `Date`   | When execution finished (successfully or not).                                                                                        |
+|           Property           |   Type   |                                                          Description                                                           |
+|------------------------------|----------|--------------------------------------------------------------------------------------------------------------------------------|
+| `type`                       | `String` | `"activity"` or `"workflow"`.                                                                             |
+| `name`                       | `String` | Name of the activity or workflow.                                                                                              |
+| `version`                    | `String` | Version of the activity or workflow.                                                                                           |
+| `activityId` or `workflowId` | `String` | ID assigned to this activity or workflow execution.                                                                            |
+| `canceled`                   | `Bool`   | Whether this item's execution was canceled.                                                                                    |
+| `cancelRequested`            | `Bool`   | Whether we've requested cancellation of this item's execution.                                                                 |
+| `error`                      | `Object` | If execution failed, this will be an object with `code` and `message` fields describing why. Otherwise it will be `undefined`. |
+| `inProgress`                 | `Bool`   | Whether execution of this item is currently happening (that is, it has not completed or been canceled).                        |
+| `input`                      | `Mixed`  | Input to the activity or workflow.                                                                                             |
+| `result`                     | `Mixed`  | If execution completed successfully, this will be the activity/workflow result.                                                |
+| `started`                    | `Bool`   | Whether execution has started.                                                                                                 |
+| `startedAt`                  | `Date`   | When execution started.                                                                                                        |
+| `success`                    | `Bool`   | Whether execution completed successfully.                                                                                      |
 
 #### Properties of `timer` Items
 

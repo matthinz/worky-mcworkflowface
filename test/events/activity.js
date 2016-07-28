@@ -95,8 +95,8 @@ describe('Event Distillation - activity items', () => {
             },
             canceled: false,
             cancelRequested: false,
-            createdAt: '2016-06-14T19:03:15.997Z',
             inProgress: false,
+            started: false,
             success: false,
         });
     });
@@ -113,45 +113,8 @@ describe('Event Distillation - activity items', () => {
             version: '1.2',
             canceled: false,
             cancelRequested: false,
-            createdAt: '2016-06-14T19:04:15.997Z',
+            started: false,
             inProgress: true,
-            input: 'ABCD1234',
-        });
-    });
-
-    it('ActivityTaskCancelRequested', () => {
-        const item = distillSingleItem([
-            scheduledEvent,
-            cancelRequestedEvent,
-        ]);
-        expect(item).to.deep.equal({
-            type: 'activity',
-            name: 'FooActivity',
-            version: '1.2',
-            activityId: 'my_foo_activity',
-            canceled: false,
-            cancelRequested: true,
-            createdAt: '2016-06-14T19:04:15.997Z',
-            inProgress: true,
-            input: 'ABCD1234',
-        });
-    });
-
-    it('ActivityTaskCanceled', () => {
-        const item = distillSingleItem([
-            scheduledEvent,
-            cancelRequestedEvent,
-            canceledEvent,
-        ]);
-        expect(item).to.deep.equal({
-            type: 'activity',
-            name: 'FooActivity',
-            version: '1.2',
-            activityId: 'my_foo_activity',
-            canceled: true,
-            cancelRequested: true,
-            createdAt: '2016-06-14T19:04:15.997Z',
-            inProgress: false,
             input: 'ABCD1234',
         });
     });
@@ -167,8 +130,49 @@ describe('Event Distillation - activity items', () => {
             activityId: 'my_foo_activity',
             canceled: false,
             cancelRequested: false,
-            createdAt: '2016-06-14T19:04:15.997Z',
+            started: true,
+            startedAt: '2016-06-14T19:06:15.997Z',
             inProgress: true,
+            input: 'ABCD1234',
+        });
+    });
+    it('ActivityTaskCancelRequested', () => {
+        const item = distillSingleItem([
+            scheduledEvent,
+            startedEvent,
+            cancelRequestedEvent,
+        ]);
+        expect(item).to.deep.equal({
+            type: 'activity',
+            name: 'FooActivity',
+            version: '1.2',
+            activityId: 'my_foo_activity',
+            canceled: false,
+            cancelRequested: true,
+            started: true,
+            startedAt: '2016-06-14T19:06:15.997Z',
+            inProgress: true,
+            input: 'ABCD1234',
+        });
+    });
+
+    it('ActivityTaskCanceled', () => {
+        const item = distillSingleItem([
+            scheduledEvent,
+            startedEvent,
+            cancelRequestedEvent,
+            canceledEvent,
+        ]);
+        expect(item).to.deep.equal({
+            type: 'activity',
+            name: 'FooActivity',
+            version: '1.2',
+            activityId: 'my_foo_activity',
+            canceled: true,
+            cancelRequested: true,
+            started: true,
+            startedAt: '2016-06-14T19:06:15.997Z',
+            inProgress: false,
             input: 'ABCD1234',
         });
     });
@@ -185,7 +189,8 @@ describe('Event Distillation - activity items', () => {
             activityId: 'my_foo_activity',
             canceled: false,
             cancelRequested: false,
-            createdAt: '2016-06-14T19:04:15.997Z',
+            started: true,
+            startedAt: '2016-06-14T19:06:15.997Z',
             inProgress: false,
             input: 'ABCD1234',
             success: true,
@@ -207,7 +212,8 @@ describe('Event Distillation - activity items', () => {
             activityId: 'my_foo_activity',
             canceled: false,
             cancelRequested: false,
-            createdAt: '2016-06-14T19:04:15.997Z',
+            started: true,
+            startedAt: '2016-06-14T19:06:15.997Z',
             error: {
                 code: 'reason',
                 message: 'here are details',
@@ -230,7 +236,8 @@ describe('Event Distillation - activity items', () => {
             activityId: 'my_foo_activity',
             canceled: false,
             cancelRequested: false,
-            createdAt: '2016-06-14T19:04:15.997Z',
+            started: true,
+            startedAt: '2016-06-14T19:06:15.997Z',
             error: {
                 code: 'TIMED_OUT',
                 message: 'Activity timed out (START_TO_CLOSE)',
