@@ -4,6 +4,7 @@ const { createDecisionFunctions } = require('../../src/decisions');
 
 describe('workflow decision helpers', () => {
     const {
+        cancelWorkflowExecution,
         completeWorkflowExecution,
         continueAsNewWorkflowExecution,
         failWorkflowExecution,
@@ -39,6 +40,15 @@ describe('workflow decision helpers', () => {
             const attrs = decision.continueAsNewWorkflowExecutionDecisionAttributes;
             expect(attrs).to.have.property('taskList').deep.equal({
                 name: 'foo-task-list',
+            });
+        });
+    });
+
+    describe('cancelWorkflowExecution()', () => {
+        it('works', () => {
+            const decision = cancelWorkflowExecution();
+            expect(decision).to.deep.equal({
+                decisionType: 'CancelWorkflowExecution',
             });
         });
     });

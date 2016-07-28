@@ -2,6 +2,7 @@
 
 const modules = [
     require('./activities'),
+    require('./child_workflows'),
     require('./timers'),
     require('./workflow'),
 ];

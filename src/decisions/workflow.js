@@ -28,6 +28,12 @@ function createWorkflowDecisionFunctions(options) {
         };
     }
 
+    function cancelWorkflowExecution() {
+        return {
+            decisionType: 'CancelWorkflowExecution',
+        };
+    }
+
     function failWorkflowExecution(err) {
         return {
             decisionType: 'FailWorkflowExecution',
@@ -36,6 +42,7 @@ function createWorkflowDecisionFunctions(options) {
     }
 
     return {
+        cancelWorkflowExecution,
         completeWorkflowExecution,
         continueAsNewWorkflowExecution,
         failWorkflowExecution,

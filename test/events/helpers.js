@@ -30,5 +30,6 @@ function distillSingleItem(events) {
 
 module.exports = {
     checkDateProperties,
+    distillEventsIntoItems,
     distillSingleItem,
 };
