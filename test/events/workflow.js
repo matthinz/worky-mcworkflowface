@@ -1,74 +1,80 @@
 const { expect } = require('chai');
-const { distillEventsIntoItems } = require('../../src/events');
+const { distillSingleItem } = require('./helpers');
 
 describe('Event Log Distillation - Workflow Type', () => {
+    const startedEvent = {
+        eventTimestamp: '2016-06-08T21:58:42.051Z',
+        eventType: 'WorkflowExecutionStarted',
+        workflowExecutionStartedEventAttributes: {
+            input: '{"foo":"bar"}',
+        },
+    };
+
+    const cancelRequestedEvent = {
+        eventTimestamp: '2016-06-08T21:59:42.051Z',
+        eventType: 'WorkflowExecutionCancelRequested',
+    };
+
+    const completedEvent = {
+        eventTimestamp: '2016-06-09T21:58:42.051Z',
+        eventType: 'WorkflowExecutionCompleted',
+        workflowExecutionCompletedEventAttributes: {
+            result: '"BazBat"',
+        },
+    };
+
     it('WorkflowExecutionStarted', () => {
-        const rawEvents = [
-            {
-                eventTimestamp: '2016-06-08T21:58:42.051Z',
-                eventType: 'WorkflowExecutionStarted',
-                workflowExecutionStartedEventAttributes: {
-                    input: '{"foo":"bar"}',
-                },
+        const item = distillSingleItem([
+            startedEvent,
+        ]);
+
+        expect(item).to.deep.equal({
+            type: 'workflow',
+            canceled: false,
+            cancelRequested: false,
+            error: false,
+            input: {
+                foo: 'bar',
             },
-            {
-                type: 'DecisionTaskScheduled',
-            },
-        ];
-        const events = distillEventsIntoItems(rawEvents);
-
-        expect(events).to.have.length(1);
-        const ev = events[0];
-
-        expect(ev).to.have.property('type', 'workflow');
-
-        expect(ev).to.have.property('started', true);
-        expect(ev).to.have.property('startedAt');
-        expect(ev.startedAt.toISOString()).to.equal('2016-06-08T21:58:42.051Z');
-
-        expect(ev).to.have.property('input').deep.equal({ foo: 'bar' });
-
-        expect(ev).not.to.have.property('completed');
-        expect(ev).not.to.have.property('error');
+            started: true,
+            startedAt: '2016-06-08T21:58:42.051Z',
+        });
     });
     it('WorkflowExecutionCompleted', () => {
-        const rawEvents = [
-            {
-                eventTimestamp: '2016-06-08T21:58:42.051Z',
-                eventType: 'WorkflowExecutionStarted',
-                workflowExecutionStartedEventAttributes: {
-                    input: '{"foo":"bar"}',
-                },
+        const item = distillSingleItem([
+            startedEvent,
+            completedEvent,
+        ]);
+
+        expect(item).to.deep.equal({
+            type: 'workflow',
+            canceled: false,
+            cancelRequested: false,
+            error: false,
+            input: {
+                foo: 'bar',
             },
-            {
-                type: 'DecisionTaskScheduled',
+            started: true,
+            startedAt: '2016-06-08T21:58:42.051Z',
+            result: 'BazBat',
+        });
+    });
+    it('WorkflowExecutionCancelRequested', () => {
+        const item = distillSingleItem([
+            startedEvent,
+            cancelRequestedEvent,
+        ]);
+
+        expect(item).to.deep.equal({
+            type: 'workflow',
+            canceled: false,
+            cancelRequested: true,
+            error: false,
+            input: {
+                foo: 'bar',
             },
-            {
-                eventTimestamp: '2016-06-09T21:58:42.051Z',
-                eventType: 'WorkflowExecutionCompleted',
-                workflowExecutionCompletedEventAttributes: {
-                    result: 'BazBat',
-                },
-            },
-        ];
-        const events = distillEventsIntoItems(rawEvents);
-
-        expect(events).to.have.length(1);
-        const ev = events[0];
-
-        expect(ev).to.have.property('type', 'workflow');
-
-        expect(ev).to.have.property('started', true);
-        expect(ev).to.have.property('startedAt');
-        expect(ev.startedAt.toISOString()).to.equal('2016-06-08T21:58:42.051Z');
-
-        expect(ev).to.have.property('finished', true);
-        expect(ev).to.have.property('finishedAt');
-        expect(ev.finishedAt.toISOString()).to.equal('2016-06-09T21:58:42.051Z');
-
-        expect(ev).to.have.property('input').deep.equal({ foo: 'bar' });
-        expect(ev).to.have.property('result', 'BazBat');
-
-        expect(ev).not.to.have.property('error');
+            started: true,
+            startedAt: '2016-06-08T21:58:42.051Z',
+        });
     });
 });
