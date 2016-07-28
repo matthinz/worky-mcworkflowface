@@ -133,16 +133,17 @@ SWF sends down a complete record of all events with each Decision task. This rec
 
 ### Supported Item Types
 
-|      `type`      |                              Description                              |
-|------------------|-----------------------------------------------------------------------|
-| `activity`       | An attempt to execute an activity task.                               |
-| `signal`         | An external signal received by the workflow.                          |
-| `timer`          | An attempt to start a timer.                                          |
-| `workflow`       | The current workflow execution. This will *always* be the first item. |
+|      `type`      |                                    Description                                     |
+|------------------|------------------------------------------------------------------------------------|
+| `activity`       | An attempt to execute an activity task.                                            |
+| `child_workflow` | Another workflow execution started via a `startChildWorkflowExecution()` decision. |
+| `signal`         | An external signal received by the workflow.                                       |
+| `timer`          | An attempt to start a timer.                                                       |
+| `workflow`       | The current workflow execution. This will *always* be the first item.              |
 
 _TODO: Support other kinds of events._
 
-#### Properties of `activity` and `workflow` Items
+#### Properties of `activity`, `workflow`, and `child_workflow` Items
 
 |           Property           |   Type   |                                                          Description                                                           |
 |------------------------------|----------|--------------------------------------------------------------------------------------------------------------------------------|
