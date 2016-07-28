@@ -126,6 +126,24 @@ Things to note about Decider functions:
 
 If your Decider throws an `Error` the associated decision task will be marked as failed and retried. Returning Promises from Deciders is not supported--your decider should execute synchronously, using Activity Tasks and Child Workflows for async processing.
 
+### `availableDecisions`
+
+The following decision functions are passed into the decider as the second arg:
+
+```
+cancelTimer(timerId)
+cancelWorkflowExecution()
+completeWorkflowExecution(result)
+continueAsNewWorkflowExecution(input)
+failWorkflowExecution(err)
+requestCancelExternalWorkflowExecution(workflowId)
+startActivity(name, input)
+startChildWorkflowExecution(type, id, input)
+startTimer(timerId, seconds)
+```
+
+TODO: More docs on the above.
+
 <a name="workflow-items"></a>
 ## `WorkflowItems`
 
