@@ -1,4 +1,5 @@
 /* eslint-disable no-param-reassign */
+const JSONish = require('../../util/jsonish');
 
 module.exports = {
     ScheduleActivityTaskFailed(event, state, items) {
@@ -30,7 +31,7 @@ module.exports = {
             cancelRequested: false,
             createdAt: new Date(event.eventTimestamp),
             inProgress: true,
-            input: attrs.input,
+            input: JSONish.parse(attrs.input),
         };
         items.push(activityItem);
 
@@ -70,7 +71,7 @@ module.exports = {
 
         activityItem.inProgress = false;
         activityItem.success = true;
-        activityItem.result = attrs.result;
+        activityItem.result = JSONish.parse(attrs.result);
     },
     ActivityTaskFailed(event, state) {
         const attrs = event.activityTaskFailedEventAttributes;

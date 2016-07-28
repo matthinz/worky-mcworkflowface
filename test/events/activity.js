@@ -26,7 +26,7 @@ const scheduledEvent = {
             version: '1.2',
         },
         activityId: 'my_foo_activity',
-        input: 'ABCD1234',
+        input: '"ABCD1234"',
     },
 };
 
@@ -58,7 +58,7 @@ const completedEvent = {
     eventType: 'ActivityTaskCompleted',
     activityTaskCompletedEventAttributes: {
         scheduledEventId: 100,
-        result: 'THIS IS THE RESULT',
+        result: '{"foo":"bar"}',
     },
 };
 
@@ -189,7 +189,9 @@ describe('Event Distillation - activity items', () => {
             inProgress: false,
             input: 'ABCD1234',
             success: true,
-            result: 'THIS IS THE RESULT',
+            result: {
+                foo: 'bar',
+            },
         });
     });
     it('ActivityTaskFailed', () => {
