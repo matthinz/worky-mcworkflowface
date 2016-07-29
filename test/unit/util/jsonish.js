@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 
-const JSONish = require('../../src/util/jsonish');
+const JSONish = require('../../../src/util/jsonish');
 
 describe('JSONish', () => {
     describe('parse', () => {

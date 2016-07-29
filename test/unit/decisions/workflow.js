@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 
-const { createDecisionFunctions } = require('../../src/decisions');
+const { createDecisionFunctions } = require('../../../src/decisions');
 
 describe('workflow decision helpers', () => {
     const {

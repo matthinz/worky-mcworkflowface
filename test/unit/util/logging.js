@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 
-const { summarizeList } = require('../../src/util/logging');
+const { summarizeList } = require('../../../src/util/logging');
 
 describe('logging', () => {
     describe('summarizeList()', () => {

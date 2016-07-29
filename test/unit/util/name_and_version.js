@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 
-const { normalizeNameAndVersion } = require('../../src/util/name_and_version');
+const { normalizeNameAndVersion } = require('../../../src/util/name_and_version');
 
 describe('normalizeNameAndVersion()', () => {
     const tests = [

@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 
-const { distillEventsIntoItems } = require('../../src/events');
+const { distillEventsIntoItems } = require('../../../src/events');
 
 // deep.equal() does not handle Date instances very well, so this does an initial
 // pass over an object, checking that various `*At` properties are `Date` instances

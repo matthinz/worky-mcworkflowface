@@ -1,7 +1,7 @@
 const { expect, assert } = require('chai');
 const { EventEmitter } = require('events');
 
-const { createTaskPoller } = require('../../src/util/poller');
+const { createTaskPoller } = require('../../../src/util/poller');
 
 describe('poller', () => {
     const pagesToReturn = [

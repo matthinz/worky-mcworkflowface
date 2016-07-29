@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 
-const { runDecider } = require('../../src/decision_task_runner/run');
+const { runDecider } = require('../../../src/decision_task_runner/run');
 
 const NOOP = () => undefined;
 

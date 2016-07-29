@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 
-const { runActivityTaskFunction } = require('../../src/activity_task_runner/run');
+const { runActivityTaskFunction } = require('../../../src/activity_task_runner/run');
 
 describe('Activity Task Runner', () => {
     it('runs tasks with JSON input', () => {

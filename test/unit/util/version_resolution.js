@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 
-const { resolveNameAndVersion } = require('../../src/util/version_resolution');
+const { resolveNameAndVersion } = require('../../../src/util/version_resolution');
 
 const workflowDefinitions = [
     {
