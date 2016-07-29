@@ -21,6 +21,10 @@ function init(options) {
         }
     );
 
+    if (typeof options.swfClient !== 'object') {
+        throw new Error('swfClient option is required.');
+    }
+
     function register() {
         return registerWithSwf(effectiveOptions).catch(err => {
             // Allow consuming error via emitter or Promise.
