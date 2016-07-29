@@ -51,8 +51,32 @@ function summarizeWorkflowItems(items) {
     );
 }
 
+function summarizeError(err) {
+    if (typeof err === 'string') {
+        return err;
+    }
+
+    const { message, code, stack } = (err || {});
+    const result = [];
+
+    if (message && code) {
+        result.push(`${message} (code: ${code})`);
+    } else if (message) {
+        result.push(message);
+    } else if (code) {
+        result.push(`code: ${code}`);
+    }
+
+    if (stack) {
+        result.push(stack);
+    }
+
+    return result.join('\n');
+}
+
 module.exports = {
     summarizeList,
     summarizeDecisions,
+    summarizeError,
     summarizeWorkflowItems,
 };

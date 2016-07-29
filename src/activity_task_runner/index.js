@@ -2,6 +2,7 @@ const debug = require('debug');
 const log = debug('swf');
 
 const { createTaskPoller } = require('../util/poller');
+const { summarizeError } = require('../util/logging');
 
 const { resolveActivityTaskFunction } = require('./resolve');
 const { runActivityTaskFunction } = require('./run');
@@ -64,7 +65,9 @@ function pollForAndRunActivityTasks({
             continuePolling();
         })
         .catch(err => {
-            workflowLog('Activity failed: %s (code: %s)', err.message, err.code);
+            if (workflowLog.enabled !== false) {
+                workflowLog('Activity failed: %s', summarizeError(err));
+            }
             emitter.emit('error', err);
             continuePolling();
         });

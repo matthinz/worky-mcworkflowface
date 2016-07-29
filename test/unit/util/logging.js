@@ -1,6 +1,9 @@
 const { expect } = require('chai');
 
-const { summarizeList } = require('../../../src/util/logging');
+const {
+    summarizeError,
+    summarizeList,
+} = require('../../../src/util/logging');
 
 describe('logging', () => {
     describe('summarizeList()', () => {
@@ -21,6 +24,25 @@ describe('logging', () => {
         });
         it('handles 5', () => {
             expect(summarizeList(['a', 'b', 'c', 'd', 'e', 'f'])).to.equal('a, b, ..., e, f');
+        });
+    });
+    describe('summarizeError', () => {
+        it('handles string', () => {
+            expect(summarizeError('foo')).to.equal('foo');
+        });
+        it('handles error w/o code but with stack', () => {
+            const err = new Error('foo');
+            const lines = summarizeError(err).split(/\n/);
+            expect(lines).to.have.length.greaterThan(1);
+            expect(lines[0]).to.equal('foo');
+        });
+        it('handles error w/ code', () => {
+            const err = new Error('foo');
+            err.code = 'ESOMETHING';
+
+            const lines = summarizeError(err).split(/\n/);
+            expect(lines).to.have.length.greaterThan(1);
+            expect(lines[0]).to.equal('foo (code: ESOMETHING)');
         });
     });
 });

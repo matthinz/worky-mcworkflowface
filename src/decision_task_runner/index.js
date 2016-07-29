@@ -6,7 +6,10 @@ const { createTaskPoller } = require('../util/poller');
 const { resolveDeciderFunction } = require('./resolve');
 const { runDecider } = require('./run');
 const { createDecisionTaskCompletedResponder } = require('./respond');
-const { summarizeDecisions } = require('../util/logging');
+const {
+    summarizeDecisions,
+    summarizeError,
+} = require('../util/logging');
 
 function getMostRecentNonDecisionEvent(events) {
     const rx = /^Decision/;
@@ -80,7 +83,9 @@ function pollForAndRunDecisionTasks(options) {
                 continuePolling();
             })
             .catch(err => {
-                workflowLog('Decision task failed: %s.', err.message);
+                if (workflowLog.enabled !== false) {
+                    workflowLog('Decision task failed: %s', summarizeError(err));
+                }
                 emitter.emit('error', err);
                 continuePolling();
             });
