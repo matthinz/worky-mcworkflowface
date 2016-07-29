@@ -42,6 +42,22 @@ const startedEvent = {
     },
 };
 
+const startFailedEvent = {
+    eventTimestamp: '2016-07-29T17:07:51.518Z',
+    eventType: 'StartChildWorkflowExecutionFailed',
+    eventId: 141,
+    startChildWorkflowExecutionFailedEventAttributes: {
+        workflowType: {
+            name: 'TestChildWorkflow',
+            version: '1.0',
+        },
+        cause: 'DEFAULT_EXECUTION_START_TO_CLOSE_TIMEOUT_UNDEFINED',
+        workflowId: 'TestChildWorkflow-1',
+        initiatedEventId: 0, // this is zero because there *is no initiated event*
+        decisionTaskCompletedEventId: 140,
+    },
+};
+
 const completedEvent = {
     eventTimestamp: '2016-07-27T21:41:08.863Z',
     eventType: 'ChildWorkflowExecutionCompleted',
@@ -139,6 +155,26 @@ describe('Event Distillation - child_workflow', () => {
             createdAt: '2016-07-27T21:04:38.147Z',
             error: false,
             inProgress: true,
+            success: false,
+        });
+    });
+    it('StartChildWorkflowExecutionFailed', () => {
+        const item = distillSingleItem([
+            startFailedEvent,
+        ]);
+        expect(item).to.deep.equal({
+            type: 'child_workflow',
+            name: 'TestChildWorkflow',
+            version: '1.0',
+            workflowId: 'TestChildWorkflow-1',
+            canceled: false,
+            cancelRequested: false,
+            createdAt: '2016-07-29T17:07:51.518Z',
+            error: {
+                code: 'DEFAULT_EXECUTION_START_TO_CLOSE_TIMEOUT_UNDEFINED',
+                message: 'DEFAULT_EXECUTION_START_TO_CLOSE_TIMEOUT_UNDEFINED',
+            },
+            inProgress: false,
             success: false,
         });
     });
