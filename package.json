@@ -7,6 +7,7 @@
     "lint": "eslint src test",
     "prepush": "npm run lint",
     "test:unit": "mocha test/unit",
+    "test:integration": "mocha test/integration",
     "test": "npm run lint && npm run test:unit"
   },
   "author": "Matt Hinz <matthinz@gmail.com>",
@@ -17,6 +18,7 @@
     "node-version-compare": "^1.0.1"
   },
   "devDependencies": {
+    "aws-sdk": "^2.4.11",
     "chai": "^3.5.0",
     "eslint": "^2.10.2",
     "eslint-config-airbnb": "^9.0.1",
