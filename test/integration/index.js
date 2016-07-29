@@ -13,6 +13,8 @@ describe('Integration Tests', () => {
     const domain = process.env.SWF_DOMAIN;
     assert(domain, 'SWF_DOMAIN env is not set.');
 
+    const taskList = `integration-tests-${Date.now()}`;
+
     before('Register workflows + activities and start pollers', () => {
         const {
             register,
@@ -20,7 +22,7 @@ describe('Integration Tests', () => {
         } = init({
             swfClient,
             domain: process.env.SWF_DOMAIN,
-            taskList: 'integration-tests',
+            taskList,
             workflowDefinitions,
             activityTaskDefinitions,
         });
@@ -66,7 +68,7 @@ describe('Integration Tests', () => {
                 workflowId,
                 workflowType,
                 taskList: {
-                    name: 'integration-tests',
+                    name: taskList,
                 },
                 executionStartToCloseTimeout: String(timeout),
                 taskStartToCloseTimeout: 'NONE',
@@ -92,6 +94,7 @@ describe('Integration Tests', () => {
             name: 'ReturnInput',
             version: '1.0',
         };
+
 
         return runWorkflow(workflowId, workflowType).then(closeStatus => {
             assert.equal(closeStatus, 'COMPLETED', 'Execution completed successfully');
