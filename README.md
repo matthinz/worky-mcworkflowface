@@ -142,7 +142,7 @@ startChildWorkflowExecution(type, id, input)
 startTimer(timerId, seconds)
 ```
 
-TODO: More docs on the above.
+These functions are convenient factories for the objects described in [AWS's `respondDecisionTaskCompleted()`](http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SWF.html#respondDecisionTaskCompleted-property) docs.
 
 <a name="workflow-items"></a>
 ## `WorkflowItems`
@@ -201,10 +201,6 @@ _TODO: Support other kinds of events._
 | `type`       | `String` | `"signal"`  |
 | `signalName` | `String` |             |
 | `input`      | `String` |             |
-
-## Decisions
-
-The `availableDecisions` argument passed to your decider provides a series of functions for creating the structures used to describe decisions. See [`src/decisions`](./src/decisions) for available functions.
 
 ## Logging
 
