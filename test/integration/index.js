@@ -1,4 +1,4 @@
-const { assert } = require('chai');
+const { expect, assert } = require('chai');
 
 const AWS = require('aws-sdk');
 
@@ -14,12 +14,11 @@ describe('Integration Tests', () => {
     assert(domain, 'SWF_DOMAIN env is not set.');
 
     const taskList = `integration-tests-${Date.now()}`;
+    let decisionTaskPoller;
+    let activityTaskPoller;
 
     before('Register workflows + activities and start pollers', () => {
-        const {
-            register,
-            startDecisionTaskPoller,
-        } = init({
+        const SWF = init({
             swfClient,
             domain: process.env.SWF_DOMAIN,
             taskList,
@@ -27,10 +26,16 @@ describe('Integration Tests', () => {
             activityTaskDefinitions,
         });
 
-        return register().then(() => Promise.all([
-            startDecisionTaskPoller(),
-        ]));
+        return SWF.register().then(() => {
+            decisionTaskPoller = SWF.startDecisionTaskPoller();
+            activityTaskPoller = SWF.startActivityTaskPoller();
+        });
     });
+
+    after('Clean up', () => Promise.all([
+        decisionTaskPoller.stop(),
+        activityTaskPoller.stop(),
+    ]));
 
     function waitForExecutionClose(workflowId, runId) {
         return new Promise((resolve, reject) => {
@@ -49,7 +54,7 @@ describe('Integration Tests', () => {
                     }
 
                     if (data.executionInfo.executionStatus === 'CLOSED') {
-                        resolve(data.executionInfo.closeStatus);
+                        resolve(data);
                         return;
                     }
 
@@ -61,7 +66,7 @@ describe('Integration Tests', () => {
         });
     }
 
-    function runWorkflow(workflowId, workflowType, timeout = 10) {
+    function runWorkflow(workflowId, workflowType, input = '', timeout = 10) {
         return new Promise((resolve, reject) => {
             const params = {
                 domain,
@@ -73,6 +78,7 @@ describe('Integration Tests', () => {
                 executionStartToCloseTimeout: String(timeout),
                 taskStartToCloseTimeout: 'NONE',
                 childPolicy: 'TERMINATE',
+                input,
             };
 
             swfClient.startWorkflowExecution(params, (err, data) => {
@@ -82,6 +88,29 @@ describe('Integration Tests', () => {
                 }
                 const { runId } = data;
                 waitForExecutionClose(workflowId, runId).then(resolve, reject);
+            });
+        });
+    }
+
+    function getWorkflowResult(workflowId, runId) {
+        return new Promise((resolve, reject) => {
+            const params = {
+                domain,
+                execution: {
+                    workflowId,
+                    runId,
+                },
+                reverseOrder: true,
+            };
+            swfClient.getWorkflowExecutionHistory(params, (err, data) => {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+
+                const event = data.events.find(ev => ev.eventType === 'WorkflowExecutionCompleted');
+                const { result } = event.workflowExecutionCompletedEventAttributes;
+                resolve(JSON.parse(result));
             });
         });
     }
@@ -96,8 +125,8 @@ describe('Integration Tests', () => {
         };
 
 
-        return runWorkflow(workflowId, workflowType).then(closeStatus => {
-            assert.equal(closeStatus, 'COMPLETED', 'Execution completed successfully');
+        return runWorkflow(workflowId, workflowType).then(data => {
+            expect(data.executionInfo).to.have.property('closeStatus', 'COMPLETED');
         });
     });
 
@@ -110,8 +139,33 @@ describe('Integration Tests', () => {
             version: '1.0',
         };
 
-        return runWorkflow(workflowId, workflowType).then(closeStatus => {
-            assert.equal(closeStatus, 'COMPLETED', 'Execution completed successfully');
+        return runWorkflow(workflowId, workflowType).then(data => {
+            expect(data.executionInfo).to.have.property('closeStatus', 'COMPLETED');
+        });
+    });
+
+    it('RunOneSuccessfulActivity', function () {
+        this.timeout(10000);
+
+        const workflowId = `RunOneSuccessfulActivity-${Date.now()}`;
+        const workflowType = {
+            name: 'RunOneSuccessfulActivity',
+            version: '1.0',
+        };
+
+        const input = {
+            now: Date.now(),
+        };
+
+        return runWorkflow(workflowId, workflowType, JSON.stringify(input)).then(data => {
+            expect(data.executionInfo).to.have.property('closeStatus', 'COMPLETED');
+
+            const { runId } = data.executionInfo.execution;
+            return getWorkflowResult(workflowId, runId);
+        }).then(result => {
+            expect(result).to.deep.equal({
+                pong: input,
+            });
         });
     });
 });
