@@ -2,8 +2,6 @@
 
 [![Build Status](https://travis-ci.org/matthinz/worky-mcworkflowface.svg?branch=master)](https://travis-ci.org/matthinz/worky-mcworkflowface)
 
-_This is a work in progress and should not be used by anyone._
-
 A Javascript library for working with AWS's Simple Workflow Service.
 
 Before using this, you should review:
