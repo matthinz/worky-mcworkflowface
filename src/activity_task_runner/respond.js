@@ -3,7 +3,7 @@ const { formatErrorForSwf } = require('../util/format_error');
 /**
  * Generates a function that can be used to report an activity task's success back to AWS.
  */
-function createActivitySuccessResponder(swfClient, taskToken) {
+function createActivitySuccessResponder(swfClient, taskToken, emitter) {
     return function activitySuccessResponder(result) {
         const params = {
             taskToken,
@@ -12,6 +12,7 @@ function createActivitySuccessResponder(swfClient, taskToken) {
         return new Promise((resolve, reject) => {
             swfClient.respondActivityTaskCompleted(params, err => {
                 if (err) {
+                    emitter.emit('error', err);
                     reject(err);
                     return;
                 }
@@ -24,7 +25,7 @@ function createActivitySuccessResponder(swfClient, taskToken) {
 /**
  * Generates a function that can be used to report an activity task's failure back to AWS.
  */
-function createActivityFailureResponder(swfClient, taskToken) {
+function createActivityFailureResponder(swfClient, taskToken, emitter) {
     return function activityFailureResponder(err) {
         const params = Object.assign(
             {},
@@ -34,9 +35,14 @@ function createActivityFailureResponder(swfClient, taskToken) {
             }
         );
         return new Promise((resolve, reject) => {
-            swfClient.respondActivityTaskFailed(params, () => {
+            swfClient.respondActivityTaskFailed(params, (awsError) => {
                 // Favor returning our *original* error rather than any AWS error here since the
                 // original error is likely more interesting.
+
+                if (awsError) {
+                    emitter.emit('error', awsError);
+                }
+
                 reject(err);
             });
         });

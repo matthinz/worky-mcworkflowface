@@ -1,7 +1,7 @@
 /**
  * Returns a function that can be used to mark a decision task as complete.
  */
-function createDecisionTaskCompletedResponder(swfClient, task) {
+function createDecisionTaskCompletedResponder(swfClient, task, emitter) {
     return function decisionTaskCompleteResponder(decisions) {
         const params = {
             taskToken: task.taskToken,
@@ -10,6 +10,7 @@ function createDecisionTaskCompletedResponder(swfClient, task) {
         return new Promise((resolve, reject) => {
             swfClient.respondDecisionTaskCompleted(params, (err) => {
                 if (err) {
+                    emitter.emit('error', err);
                     reject(err);
                     return;
                 }

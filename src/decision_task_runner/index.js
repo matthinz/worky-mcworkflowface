@@ -70,7 +70,11 @@ function pollForAndRunDecisionTasks(options) {
             mostRecentEvent.eventId
         );
 
-        const handleCompletedDecisionTask = createDecisionTaskCompletedResponder(swfClient, task);
+        const handleCompletedDecisionTask = createDecisionTaskCompletedResponder(
+            swfClient,
+            task,
+            emitter
+        );
 
         resolveDeciderFunction(task, workflowDefinitions)
             .then(deciderFunc => runDecider(task, deciderFunc, workflowLog, options))
@@ -86,7 +90,6 @@ function pollForAndRunDecisionTasks(options) {
                 if (workflowLog.enabled !== false) {
                     workflowLog('Decision task failed: %s', summarizeError(err));
                 }
-                emitter.emit('error', err);
                 continuePolling();
             });
     });

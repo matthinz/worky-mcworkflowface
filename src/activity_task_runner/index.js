@@ -57,8 +57,8 @@ function pollForAndRunActivityTasks({
             return runActivityTaskFunction(task, func);
         })
         .then(
-            createActivitySuccessResponder(swfClient, task.taskToken),
-            createActivityFailureResponder(swfClient, task.taskToken)
+            createActivitySuccessResponder(swfClient, task.taskToken, emitter),
+            createActivityFailureResponder(swfClient, task.taskToken, emitter)
         )
         .then(() => {
             workflowLog('Activity completed.');
@@ -68,7 +68,6 @@ function pollForAndRunActivityTasks({
             if (workflowLog.enabled !== false) {
                 workflowLog('Activity failed: %s', summarizeError(err));
             }
-            emitter.emit('error', err);
             continuePolling();
         });
     });
