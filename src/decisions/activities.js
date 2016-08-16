@@ -1,7 +1,10 @@
 const uuid = require('node-uuid');
 
 const { normalizeNameAndVersion } = require('../util/name_and_version');
-const { getLatestVersionForDefinitionNamed } = require('../util/version_resolution');
+const {
+    getLatestVersionForDefinitionNamed,
+    resolveNameAndVersion,
+} = require('../util/version_resolution');
 
 function createActivityDecisionFunctions(options) {
     const { activityTaskDefinitions } = options;
@@ -18,6 +21,18 @@ function createActivityDecisionFunctions(options) {
                 activityType.name,
                 activityTaskDefinitions
             );
+        }
+
+        // Resolve the requested name+version combo.
+        // We do this here because we can throw an easier-to-understand error than the AWS SDK.
+        const resolved = resolveNameAndVersion(activityType, activityTaskDefinitions);
+
+        if (!resolved) {
+            const n = activityType.name;
+            const v = activityType.version;
+            const err = new Error(`Activity task does not exist: name='${n}', version='${v}'`);
+            err.code = 'ENOACTIVITYDEF';
+            throw err;
         }
 
         const attrs = {

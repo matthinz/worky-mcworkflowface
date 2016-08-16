@@ -42,4 +42,34 @@ describe('startActivity()', () => {
         const attrs = decision.scheduleActivityTaskDecisionAttributes;
         expect(attrs).to.have.property('input', '"here is some input"');
     });
+
+    it('throws error if activity not found by name', () => {
+        let err = null;
+
+        try {
+            startActivity('SomeFakeActivity');
+        } catch (e) {
+            err = e;
+        }
+
+        expect(err).to.exist;
+        expect(err).to.have.property('code', 'ENOACTIVITYDEF');
+        // eslint-disable-next-line max-len
+        expect(err).to.have.property('message', 'Activity task does not exist: name=\'SomeFakeActivity\', version=\'undefined\'');
+    });
+
+    it('throws error if activity not found by version', () => {
+        let err = null;
+
+        try {
+            startActivity({ name: 'MyActivityTask', version: '3.0' });
+        } catch (e) {
+            err = e;
+        }
+
+        expect(err).to.exist;
+        expect(err).to.have.property('code', 'ENOACTIVITYDEF');
+        // eslint-disable-next-line max-len
+        expect(err).to.have.property('message', 'Activity task does not exist: name=\'MyActivityTask\', version=\'3.0\'');
+    });
 });
