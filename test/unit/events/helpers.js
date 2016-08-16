@@ -7,8 +7,9 @@ const { distillEventsIntoItems } = require('../../../src/events');
 // and converting them to ISO strings for .deep.equal() checks.
 function checkDateProperties(obj) {
     const dateProperties = [
-        'createdAt',
         'canceledAt',
+        'createdAt',
+        'finishedAt',
         'firedAt',
         'startedAt',
     ];

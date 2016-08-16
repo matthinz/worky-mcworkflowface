@@ -51,6 +51,7 @@ describe('Event Log Distillation - Workflow Type', () => {
             canceled: false,
             cancelRequested: false,
             error: false,
+            finishedAt: '2016-06-09T21:58:42.051Z',
             input: {
                 foo: 'bar',
             },

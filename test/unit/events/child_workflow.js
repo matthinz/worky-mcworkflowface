@@ -211,6 +211,7 @@ describe('Event Distillation - child_workflow', () => {
             cancelRequested: false,
             createdAt: '2016-07-27T21:04:38.147Z',
             error: false,
+            finishedAt: '2016-07-27T21:41:08.863Z',
             inProgress: false,
             success: true,
             result: 'COMPLETED!',
@@ -234,6 +235,7 @@ describe('Event Distillation - child_workflow', () => {
                 code: 'EWHATEVER',
                 message: 'ERROR!',
             },
+            finishedAt: '2016-07-27T21:45:34.622Z',
             inProgress: false,
             success: false,
         });
@@ -301,6 +303,7 @@ describe('Event Distillation - child_workflow', () => {
             cancelRequested: true,
             createdAt: '2016-07-27T21:04:38.147Z',
             error: false,
+            finishedAt: '2016-07-28T23:20:56.050Z',
             inProgress: false,
             success: false,
         });

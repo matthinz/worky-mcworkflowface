@@ -163,13 +163,14 @@ _TODO: Support other kinds of events._
 
 |           Property           |   Type   |                                                          Description                                                           |
 |------------------------------|----------|--------------------------------------------------------------------------------------------------------------------------------|
-| `type`                       | `String` | `"activity"` or `"workflow"`.                                                                             |
+| `type`                       | `String` | `"activity"` or `"workflow"`.                                                                                                  |
 | `name`                       | `String` | Name of the activity or workflow.                                                                                              |
 | `version`                    | `String` | Version of the activity or workflow.                                                                                           |
 | `activityId` or `workflowId` | `String` | ID assigned to this activity or workflow execution.                                                                            |
 | `canceled`                   | `Bool`   | Whether this item's execution was canceled.                                                                                    |
 | `cancelRequested`            | `Bool`   | Whether we've requested cancellation of this item's execution.                                                                 |
 | `error`                      | `Object` | If execution failed, this will be an object with `code` and `message` fields describing why. Otherwise it will be `undefined`. |
+| `finishedAt`                 | `Date`   | Date/time execution stopped, whether due to successful completion, failure, or cancellation.                                   |
 | `inProgress`                 | `Bool`   | Whether execution of this item is currently happening (that is, it has not completed or been canceled).                        |
 | `input`                      | `Mixed`  | Input to the activity or workflow.                                                                                             |
 | `result`                     | `Mixed`  | If execution completed successfully, this will be the activity/workflow result.                                                |

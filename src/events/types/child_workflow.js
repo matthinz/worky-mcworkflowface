@@ -59,6 +59,7 @@ module.exports = {
         item.inProgress = false;
         item.result = JSONish.parse(attrs.result);
         item.success = true;
+        item.finishedAt = new Date(event.eventTimestamp);
 
         delete state.childWorkflowItemsByEventId[attrs.initiatedEventId];
         delete state.childWorkflowItemsByWorkflowId[item.workflowId];
@@ -72,6 +73,7 @@ module.exports = {
             code: attrs.reason,
             message: attrs.details,
         };
+        item.finishedAt = new Date(event.eventTimestamp);
 
         delete state.childWorkflowItemsByEventId[attrs.initiatedEventId];
         delete state.childWorkflowItemsByWorkflowId[item.workflowId];
@@ -103,6 +105,7 @@ module.exports = {
 
         item.canceled = true;
         item.inProgress = false;
+        item.finishedAt = new Date(event.eventTimestamp);
 
         delete state.childWorkflowItemsByEventId[attrs.initiatedEventId];
         delete state.childWorkflowItemsByWorkflowId[item.workflowId];

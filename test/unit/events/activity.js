@@ -40,7 +40,7 @@ const cancelRequestedEvent = {
 
 const canceledEvent = {
     eventType: 'ActivityTaskCanceled',
-    eventTimestamp: '2016-06-14T19:06:15.997Z',
+    eventTimestamp: '2016-06-14T19:07:15.997Z',
     activityTaskCanceledEventAttributes: {
         scheduledEventId: 100,
     },
@@ -56,6 +56,7 @@ const startedEvent = {
 
 const completedEvent = {
     eventType: 'ActivityTaskCompleted',
+    eventTimestamp: '2016-06-14T19:07:15.997Z',
     activityTaskCompletedEventAttributes: {
         scheduledEventId: 100,
         result: '{"foo":"bar"}',
@@ -64,6 +65,7 @@ const completedEvent = {
 
 const failedEvent = {
     eventType: 'ActivityTaskFailed',
+    eventTimestamp: '2016-06-14T19:07:15.997Z',
     activityTaskFailedEventAttributes: {
         reason: 'reason',
         details: 'here are details',
@@ -73,6 +75,7 @@ const failedEvent = {
 
 const timedOutEvent = {
     eventType: 'ActivityTaskTimedOut',
+    eventTimestamp: '2016-06-14T19:07:15.997Z',
     activityTaskTimedOutEventAttributes: {
         scheduledEventId: 100,
         timeoutType: 'START_TO_CLOSE',
@@ -170,6 +173,7 @@ describe('Event Distillation - activity items', () => {
             activityId: 'my_foo_activity',
             canceled: true,
             cancelRequested: true,
+            finishedAt: '2016-06-14T19:07:15.997Z',
             started: true,
             startedAt: '2016-06-14T19:06:15.997Z',
             inProgress: false,
@@ -189,6 +193,7 @@ describe('Event Distillation - activity items', () => {
             activityId: 'my_foo_activity',
             canceled: false,
             cancelRequested: false,
+            finishedAt: '2016-06-14T19:07:15.997Z',
             started: true,
             startedAt: '2016-06-14T19:06:15.997Z',
             inProgress: false,
@@ -212,6 +217,7 @@ describe('Event Distillation - activity items', () => {
             activityId: 'my_foo_activity',
             canceled: false,
             cancelRequested: false,
+            finishedAt: '2016-06-14T19:07:15.997Z',
             started: true,
             startedAt: '2016-06-14T19:06:15.997Z',
             error: {
@@ -236,6 +242,7 @@ describe('Event Distillation - activity items', () => {
             activityId: 'my_foo_activity',
             canceled: false,
             cancelRequested: false,
+            finishedAt: '2016-06-14T19:07:15.997Z',
             started: true,
             startedAt: '2016-06-14T19:06:15.997Z',
             error: {

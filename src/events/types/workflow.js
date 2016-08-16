@@ -25,5 +25,6 @@ module.exports = {
 
         const { workflowItem } = state;
         workflowItem.result = JSONish.parse(attrs.result);
+        workflowItem.finishedAt = new Date(event.eventTimestamp);
     },
 };

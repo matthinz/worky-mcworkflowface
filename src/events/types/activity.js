@@ -59,6 +59,7 @@ module.exports = {
         const activityItem = state.activityItemsByScheduledEventId[attrs.scheduledEventId];
         activityItem.canceled = true;
         activityItem.inProgress = false;
+        activityItem.finishedAt = new Date(event.eventTimestamp);
     },
     ActivityTaskStarted(event, state) {
         const attrs = event.activityTaskStartedEventAttributes;
@@ -74,6 +75,7 @@ module.exports = {
         activityItem.inProgress = false;
         activityItem.success = true;
         activityItem.result = JSONish.parse(attrs.result);
+        activityItem.finishedAt = new Date(event.eventTimestamp);
     },
     ActivityTaskFailed(event, state) {
         const attrs = event.activityTaskFailedEventAttributes;
@@ -85,6 +87,7 @@ module.exports = {
             code: attrs.reason,
             message: attrs.details,
         };
+        activityItem.finishedAt = new Date(event.eventTimestamp);
     },
     ActivityTaskTimedOut(event, state) {
         const attrs = event.activityTaskTimedOutEventAttributes;
@@ -96,5 +99,6 @@ module.exports = {
             code: 'TIMED_OUT',
             message: `Activity timed out (${attrs.timeoutType})`,
         };
+        activityItem.finishedAt = new Date(event.eventTimestamp);
     },
 };
