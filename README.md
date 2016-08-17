@@ -41,6 +41,19 @@ register().then(() => {
 
 ```
 
+### Logging
+
+Log output is done via [`debug`](https://github.com/visionmedia/debug).
+
+Namespaces are as follows:
+
+- `swf:polling` - Related to long-polling operations (for decision and activity tasks).
+- `swf:registration` - Related to registering workflows and activities with AWS.
+- `swf:decider:<workflowId>:<runId>` - For decision task execution.
+- `swf:activity:<ActivityTaskName>:<workflowId>:<activityId>` - For activity task + execution.
+
+**You should run with your `DEBUG` environment variable set to at least `swf:*` so you see error messages.**
+
 ## Public API
 
 <a name="api-init"></a>
@@ -185,15 +198,6 @@ _TODO: Support other kinds of events._
 | `type`       | `String` | `"signal"`  |
 | `signalName` | `String` |             |
 | `input`      | `String` |             |
-
-## Logging
-
-Logging is done via [`debug`](https://github.com/visionmedia/debug).
-
-Namespaces are as follows:
-
-- `swf:<workflowId>:decider` - For decision task polling + execution.
-- `swf:<workflowId>:<ActivityTaskName>:<activityId>` - For activity task polling + execution.
 
 ### Representing Errors
 

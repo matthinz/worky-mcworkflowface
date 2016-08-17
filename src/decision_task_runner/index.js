@@ -1,5 +1,5 @@
 const debug = require('debug');
-const log = debug('swf');
+const pollingLog = debug('swf:polling');
 
 const { createTaskPoller } = require('../util/poller');
 
@@ -44,17 +44,17 @@ function pollForAndRunDecisionTasks(options) {
         },
     });
 
-    poller.on('started', () => log('Polling for decision tasks...'));
+    poller.on('started', () => pollingLog('Polling for decision tasks...'));
 
-    poller.on('timedOut', () => log('Decision task long polling timed out.'));
+    poller.on('timedOut', () => pollingLog('Decision task long polling timed out.'));
 
     poller.on('task', (task, continuePolling) => {
         const {
             events,
-            workflowExecution: { workflowId },
+            workflowExecution: { workflowId, runId },
         } = task;
 
-        const workflowLog = debug(`swf:${workflowId}:decider`);
+        const workflowLog = debug(`swf:decider:${workflowId}:${runId}`);
 
         const handleCompletedDecisionTask = createDecisionTaskCompletedResponder(
             swfClient,
