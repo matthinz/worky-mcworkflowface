@@ -2,7 +2,6 @@ const debug = require('debug');
 const log = debug('swf');
 
 const { createTaskPoller } = require('../util/poller');
-const { summarizeError } = require('../util/logging');
 
 const { resolveActivityTaskFunction } = require('./resolve');
 const { runActivityTaskFunction } = require('./run');
@@ -20,7 +19,6 @@ function pollForAndRunActivityTasks({
     activityTaskDefinitions,
     taskList,
     identity,
-    emitter,
 }) {
     const poller = createTaskPoller({
         swfClient,
@@ -33,8 +31,6 @@ function pollForAndRunActivityTasks({
             identity,
         },
     });
-
-    poller.on('error', (err) => emitter.emit('error', err));
 
     poller.on('started', () => log('Polling for activity tasks...'));
 
@@ -52,24 +48,16 @@ function pollForAndRunActivityTasks({
         workflowLog('Received activity task');
 
         resolveActivityTaskFunction(task, activityTaskDefinitions)
-        .then((func) => {
-            workflowLog('Running activity task function');
-            return runActivityTaskFunction(task, func);
-        })
-        .then(
-            createActivitySuccessResponder(swfClient, task.taskToken, emitter),
-            createActivityFailureResponder(swfClient, task.taskToken, emitter)
-        )
-        .then(() => {
-            workflowLog('Activity completed.');
-            continuePolling();
-        })
-        .catch(err => {
-            if (workflowLog.enabled !== false) {
-                workflowLog('Activity failed: %s', summarizeError(err));
-            }
-            continuePolling();
-        });
+            .then((func) => {
+                workflowLog('Running activity task function');
+                return runActivityTaskFunction(task, func);
+            })
+            .then(
+                // NOTE: Both of these responders *never* reject, they only resolve.
+                createActivitySuccessResponder(swfClient, task.taskToken, log, workflowLog),
+                createActivityFailureResponder(swfClient, task.taskToken, log, workflowLog)
+            )
+            .then(continuePolling);
     });
 
     poller.start();

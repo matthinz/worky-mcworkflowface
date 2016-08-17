@@ -23,7 +23,6 @@ Or, in JS:
 const AWS = require('aws-sdk');
 const { init } = require('worky-mcworkflowface');
 const {
-    on,
     register,
     startActivityTaskPoller,
     startDecisionTaskPoller,
@@ -33,10 +32,6 @@ const {
     taskList: 'MainTaskList',
     workflowDefinitions: require('./workflows'),
     activityTaskDefinitions: require('./activities'),
-});
-
-on('error', (err) => {
-    console.error(err);
 });
 
 register().then(() => {
@@ -66,21 +61,11 @@ Available options:
 
 |                     Method                     |                                                     Description                                                      |
 |------------------------------------------------|----------------------------------------------------------------------------------------------------------------------|
-| `on()`                                         | A standard `EventEmitter.on()` method used to listen for events.                                                     |
 | `register()`                                   | Registers your workflows and activity tasks with SWF. Returns a `Promise` that resolves when registration completes. |
 | `resolveActivityTaskDefinition(name, version)` | Resolves a specific name + version combo of an activity task.                                                                                                                     |
 | `resolveWorkflowDefinition(name, version)`     | Resolves a specific name + version combo of a decision task.                                                                                                                     |
 | `startActivityTaskPoller()`                    | Starts polling for and executing SWF Activity Tasks.                                                                 |
 | `startDecisionTaskPoller()`                    | Starts polling for and executing SWF Decision Tasks.                                                                 |
-
-Any errors encountered during polling and execution will be emitted as `error` events. You can trap them like so:
-
-```javascript
-const { on } = init(options);
-on('error', (err) => {
-    console.error('oh noes!', err);
-});
-```
 
 ## Deciders
 
