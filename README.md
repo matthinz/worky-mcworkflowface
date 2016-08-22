@@ -23,7 +23,6 @@ Or, in JS:
 const AWS = require('aws-sdk');
 const { init } = require('worky-mcworkflowface');
 const {
-    on,
     register,
     startActivityTaskPoller,
     startDecisionTaskPoller,
@@ -35,16 +34,25 @@ const {
     activityTaskDefinitions: require('./activities'),
 });
 
-on('error', (err) => {
-    console.error(err);
-});
-
 register().then(() => {
     startActivityTaskPoller();
     startDecisionTaskPoller();
 });
 
 ```
+
+### Logging
+
+Log output is done via [`debug`](https://github.com/visionmedia/debug).
+
+Namespaces are as follows:
+
+- `swf:polling` - Related to long-polling operations (for decision and activity tasks).
+- `swf:registration` - Related to registering workflows and activities with AWS.
+- `swf:decider:<workflowId>:<runId>` - For decision task execution.
+- `swf:activity:<ActivityTaskName>:<workflowId>:<activityId>` - For activity task + execution.
+
+**You should run with your `DEBUG` environment variable set to at least `swf:*` so you see error messages.**
 
 ## Public API
 
@@ -66,21 +74,11 @@ Available options:
 
 |                     Method                     |                                                     Description                                                      |
 |------------------------------------------------|----------------------------------------------------------------------------------------------------------------------|
-| `on()`                                         | A standard `EventEmitter.on()` method used to listen for events.                                                     |
 | `register()`                                   | Registers your workflows and activity tasks with SWF. Returns a `Promise` that resolves when registration completes. |
 | `resolveActivityTaskDefinition(name, version)` | Resolves a specific name + version combo of an activity task.                                                                                                                     |
 | `resolveWorkflowDefinition(name, version)`     | Resolves a specific name + version combo of a decision task.                                                                                                                     |
 | `startActivityTaskPoller()`                    | Starts polling for and executing SWF Activity Tasks.                                                                 |
 | `startDecisionTaskPoller()`                    | Starts polling for and executing SWF Decision Tasks.                                                                 |
-
-Any errors encountered during polling and execution will be emitted as `error` events. You can trap them like so:
-
-```javascript
-const { on } = init(options);
-on('error', (err) => {
-    console.error('oh noes!', err);
-});
-```
 
 ## Deciders
 
@@ -200,15 +198,6 @@ _TODO: Support other kinds of events._
 | `type`       | `String` | `"signal"`  |
 | `signalName` | `String` |             |
 | `input`      | `String` |             |
-
-## Logging
-
-Logging is done via [`debug`](https://github.com/visionmedia/debug).
-
-Namespaces are as follows:
-
-- `swf:<workflowId>:decider` - For decision task polling + execution.
-- `swf:<workflowId>:<ActivityTaskName>:<activityId>` - For activity task polling + execution.
 
 ### Representing Errors
 

@@ -1,21 +1,22 @@
 const { formatErrorForSwf } = require('../util/format_error');
+const { summarizeError } = require('../util/logging');
 
 /**
  * Generates a function that can be used to report an activity task's success back to AWS.
  */
-function createActivitySuccessResponder(swfClient, taskToken, emitter) {
+function createActivitySuccessResponder(swfClient, taskToken, log) {
     return function activitySuccessResponder(result) {
         const params = {
             taskToken,
             result,
         };
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             swfClient.respondActivityTaskCompleted(params, err => {
-                if (err) {
-                    emitter.emit('error', err);
-                    reject(err);
-                    return;
+                if (err && log.enabled) {
+                    log('Error during respondActivityTaskCompleted: %s', summarizeError(err));
+                    // NOTE: Falling through on purpose here.
                 }
+
                 resolve(result);
             });
         });
@@ -25,8 +26,12 @@ function createActivitySuccessResponder(swfClient, taskToken, emitter) {
 /**
  * Generates a function that can be used to report an activity task's failure back to AWS.
  */
-function createActivityFailureResponder(swfClient, taskToken, emitter) {
+function createActivityFailureResponder(swfClient, taskToken, log) {
     return function activityFailureResponder(err) {
+        if (log.enabled) {
+            log('Activity task failed: %s', summarizeError(err));
+        }
+
         const params = Object.assign(
             {},
             formatErrorForSwf(err),
@@ -34,16 +39,13 @@ function createActivityFailureResponder(swfClient, taskToken, emitter) {
                 taskToken,
             }
         );
-        return new Promise((resolve, reject) => {
+
+        return new Promise((resolve) => {
             swfClient.respondActivityTaskFailed(params, (awsError) => {
-                // Favor returning our *original* error rather than any AWS error here since the
-                // original error is likely more interesting.
-
-                if (awsError) {
-                    emitter.emit('error', awsError);
+                if (awsError && log.enabled) {
+                    log('Error during respondActivityTaskFailed: %s', summarizeError(awsError));
                 }
-
-                reject(err);
+                resolve();
             });
         });
     };

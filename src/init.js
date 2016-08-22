@@ -1,4 +1,3 @@
-const { EventEmitter } = require('events');
 const os = require('os');
 
 const { registerWithSwf } = require('./register');
@@ -8,17 +7,13 @@ const { normalizeNameAndVersion } = require('./util/name_and_version');
 const { resolveNameAndVersion } = require('./util/version_resolution');
 
 function init(options) {
-    const emitter = new EventEmitter();
     const effectiveOptions = Object.assign(
         {
             activityTaskDefitions: [],
             identity: os.hostname(),
             workflowDefinitions: [],
         },
-        options || {},
-        {
-            emitter,
-        }
+        options || {}
     );
 
     if (typeof options.swfClient !== 'object') {
@@ -26,11 +21,7 @@ function init(options) {
     }
 
     function register() {
-        return registerWithSwf(effectiveOptions).catch(err => {
-            // Allow consuming error via emitter or Promise.
-            emitter.emit('error', err);
-            throw err;
-        });
+        return registerWithSwf(effectiveOptions);
     }
 
     function resolveActivityTaskDefinition(name, version) {
@@ -55,10 +46,7 @@ function init(options) {
         return pollForAndRunDecisionTasks(effectiveOptions);
     }
 
-    const on = emitter.on.bind(emitter);
-
     return {
-        on,
         register,
         resolveActivityTaskDefinition,
         resolveWorkflowDefinition,

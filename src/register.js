@@ -1,6 +1,6 @@
 const compareVersions = require('node-version-compare');
 
-const log = require('debug')('swf');
+const log = require('debug')('swf:registration');
 
 const DEFAULT_ACTIVITY_TASK_SETTINGS = {
     defaultTaskStartToCloseTimeout: 'NONE',
