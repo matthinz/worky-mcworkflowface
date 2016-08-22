@@ -1,5 +1,33 @@
 const itemHandlers = require('./types');
-const logUnhandledEvent = require('debug')('swf:unhandled-events');
+const debug = require('debug');
+
+const unhandledEventsSeenAt = {};
+const UNHANDLED_EVENT_REPORTING_INTERVAL = 60 * 1000 * 3;
+
+function logUnhandledEvent(event) {
+    const lastSeenAt = unhandledEventsSeenAt[event.eventType] || 0;
+
+    const now = Date.now();
+    const msSinceLastLog = now - lastSeenAt;
+
+    if (msSinceLastLog < UNHANDLED_EVENT_REPORTING_INTERVAL) {
+        // We've already logged about this recently.
+        return false;
+    }
+
+    unhandledEventsSeenAt[event.eventType] = now;
+
+    const log = debug('swf:unhandled-events');
+    if (!log.enabled) {
+        return false;
+    }
+
+    log(
+        'Unhandled SWF Event: %s',
+        JSON.stringify(event, null, 4)
+    );
+    return true;
+}
 
 /**
  * Given a set of events reported by SWF, distill them into an easier to consume form.
@@ -21,12 +49,7 @@ function distillEventsIntoItems(rawEvents) {
         });
 
         if (!handled) {
-            if (logUnhandledEvent.enabled) {
-                logUnhandledEvent(
-                    'Unhandled SWF Event: %s',
-                    JSON.stringify(event, null, 4)
-                );
-            }
+            logUnhandledEvent(event);
         }
     });
 
