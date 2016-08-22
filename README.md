@@ -56,10 +56,15 @@ Namespaces are as follows:
 
 ## Public API
 
-<a name="api-init"></a>
-We expose a single public api method: `init(options)`.
+|              Method             |                                                                       Description                                                                       |
+|---------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [`init(Object)`](#api-init)           | The main entry point. Returns a set of functions preconfigured for use in your environment.                                                             |
+| `distillEventsIntoItems(Array)` | Takes an array of SWF events from the AWS API and distills them into easier-to-digest items. Provided for use in testing your workflows with real data. |
 
-Available options:
+<a name="api-init"></a>
+### `init(options)`
+
+This is the main API method. It accepts the following options:
 
 |           Option          |   Type   |                                         Description                                         |
 |---------------------------|----------|---------------------------------------------------------------------------------------------|
@@ -70,7 +75,7 @@ Available options:
 | `identity`                | `String` | _(Optional.)_ Identity of this worker passed to SWF. Defaults to `os.hostname()`.           |
 | `taskList`                | `String` | Name of the task list we are using. Any decisions made requiring a task list will use this. |
 
-`init(options)` then returns an object with the following methods:
+It returns an object with the following methods:
 
 |                     Method                     |                                                     Description                                                      |
 |------------------------------------------------|----------------------------------------------------------------------------------------------------------------------|
