@@ -30,7 +30,7 @@ describe('Event Distillation - Timer Items', () => {
     });
 
     it('StartTimerFailed', () => {
-        const item = distillSingleItem([
+        shouldBeUnhandled([
             {
                 eventType: 'StartTimerFailed',
                 eventTimestamp: '2016-06-14T17:39:32.987Z',
@@ -40,19 +40,6 @@ describe('Event Distillation - Timer Items', () => {
                 },
             },
         ]);
-        expect(item).to.deep.equal({
-            type: 'timer',
-            timerId: 'foobarbaz',
-            canceled: false,
-            cancelRequested: false,
-            fired: false,
-            inProgress: false,
-            error: {
-                code: 'TIMER_ID_ALREADY_IN_USE',
-                message: 'TIMER_ID_ALREADY_IN_USE',
-            },
-            started: false,
-        });
     });
 
     it('TimerCanceled', () => {

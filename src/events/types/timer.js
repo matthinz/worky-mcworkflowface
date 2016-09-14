@@ -19,23 +19,6 @@ module.exports = {
         }
         state.timerItemsByStartEventId[event.eventId] = timerItem;
     },
-    StartTimerFailed(event, state, items) {
-        const attrs = event.startTimerFailedEventAttributes;
-        const timerItem = {
-            type: 'timer',
-            canceled: false,
-            cancelRequested: false,
-            fired: false,
-            inProgress: false,
-            timerId: attrs.timerId,
-            error: {
-                code: attrs.cause,
-                message: attrs.cause,
-            },
-            started: false,
-        };
-        items.push(timerItem);
-    },
     TimerCanceled(event, state) {
         const attrs = event.timerCanceledEventAttributes;
 
