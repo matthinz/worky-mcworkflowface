@@ -8,11 +8,9 @@ function clearUnhandledEvents(event, state) {
     state.unhandledEvents = [];
 }
 
-// Currently we ignore decision task events.
-// If a case can be made for why the decider needs to know that it has been called, we can add.
 module.exports = {
     DecisionTaskCompleted: clearUnhandledEvents,
+    DecisionTaskTimedOut: clearUnhandledEvents,
     DecisionTaskScheduled: NOOP,
     DecisionTaskStarted: NOOP,
-    DecisionTaskTimedOut: clearUnhandledEvents,
 };
