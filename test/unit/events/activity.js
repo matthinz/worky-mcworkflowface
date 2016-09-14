@@ -1,7 +1,8 @@
-const { expect } = require('chai');
+const { assert, expect } = require('chai');
 
 const {
     distillSingleItem,
+    shouldBeUnhandled,
 } = require('./helpers');
 
 const scheduleFailedEvent = {
@@ -85,23 +86,7 @@ const timedOutEvent = {
 
 describe('Event Distillation - activity items', () => {
     it('ScheduleActivityTaskFailed', () => {
-        const item = distillSingleItem([
-            scheduleFailedEvent,
-        ]);
-        expect(item).to.deep.equal({
-            type: 'activity',
-            name: 'FooActivity',
-            version: '1.2',
-            error: {
-                code: 'ACTIVITY_TYPE_DOES_NOT_EXIST',
-                message: 'ACTIVITY_TYPE_DOES_NOT_EXIST',
-            },
-            canceled: false,
-            cancelRequested: false,
-            inProgress: false,
-            started: false,
-            success: false,
-        });
+        shouldBeUnhandled([scheduleFailedEvent]);
     });
 
     it('ActivityTaskScheduled', () => {
