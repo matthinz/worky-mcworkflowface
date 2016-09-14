@@ -1,4 +1,4 @@
-const { expect } = require('chai');
+const { assert, expect } = require('chai');
 
 const { distillEventsIntoItems } = require('../../../src/events');
 
