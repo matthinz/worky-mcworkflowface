@@ -1,6 +1,9 @@
-const { expect } = require('chai');
+const { assert, expect } = require('chai');
 
-const { distillSingleItem } = require('./helpers');
+const {
+    distillSingleItem,
+    shouldBeUnhandled,
+} = require('./helpers');
 
 describe('Event Distillation - Timer Items', () => {
     it('TimerStarted', () => {
@@ -118,7 +121,7 @@ describe('Event Distillation - Timer Items', () => {
         });
     });
     it('CancelTimerFailed', () => {
-        const item = distillSingleItem([
+        shouldBeUnhandled([
             {
                 eventId: '12345',
                 eventType: 'TimerStarted',
@@ -137,15 +140,5 @@ describe('Event Distillation - Timer Items', () => {
                 },
             },
         ]);
-        expect(item).to.deep.equal({
-            type: 'timer',
-            timerId: 'foobarbaz',
-            canceled: false,
-            cancelRequested: false,
-            fired: false,
-            inProgress: true,
-            started: true,
-            startedAt: '2016-06-14T17:39:32.987Z',
-        });
     });
 });
