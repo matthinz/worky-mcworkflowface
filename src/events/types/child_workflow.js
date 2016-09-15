@@ -31,25 +31,6 @@ module.exports = {
         }
         state.childWorkflowItemsByWorkflowId[attrs.workflowId] = item;
     },
-    StartChildWorkflowExecutionFailed(event, state, items) {
-        // NOTE: There is no "initiated" event before this.
-        const attrs = event.startChildWorkflowExecutionFailedEventAttributes;
-        items.push({
-            type: 'child_workflow',
-            name: attrs.workflowType.name,
-            version: attrs.workflowType.version,
-            workflowId: attrs.workflowId,
-            canceled: false,
-            cancelRequested: false,
-            createdAt: new Date(event.eventTimestamp),
-            error: {
-                code: attrs.cause,
-                message: attrs.cause,
-            },
-            inProgress: false,
-            success: false,
-        });
-    },
     ChildWorkflowExecutionStarted() {
         // This is currently a no-op. Item creation is handled above.
     },

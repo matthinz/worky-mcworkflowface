@@ -2,24 +2,6 @@
 const JSONish = require('../../util/jsonish');
 
 module.exports = {
-    ScheduleActivityTaskFailed(event, state, items) {
-        const attrs = event.scheduleActivityTaskFailedEventAttributes;
-        const activityItem = {
-            type: 'activity',
-            name: attrs.activityType.name,
-            version: attrs.activityType.version,
-            canceled: false,
-            cancelRequested: false,
-            error: {
-                code: attrs.cause,
-                message: attrs.cause,
-            },
-            inProgress: false,
-            started: false,
-            success: false,
-        };
-        items.push(activityItem);
-    },
     ActivityTaskScheduled(event, state, items) {
         const attrs = event.activityTaskScheduledEventAttributes;
         const activityItem = {

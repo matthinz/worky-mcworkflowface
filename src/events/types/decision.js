@@ -1,10 +1,16 @@
 const NOOP = require('../../util/noop');
 
-// Currently we ignore decision task events.
-// If a case can be made for why the decider needs to know that it has been called, we can add.
+// Undoes unhandled event tracking initiated by the distiller.
+// The idea here is that a decision task completing or timing out
+// marks an unhandled event as "handled".
+function clearUnhandledEvents(event, state) {
+    // eslint-disable-next-line no-param-reassign
+    state.unhandledEvents = [];
+}
+
 module.exports = {
-    DecisionTaskCompleted: NOOP,
+    DecisionTaskCompleted: clearUnhandledEvents,
+    DecisionTaskTimedOut: clearUnhandledEvents,
     DecisionTaskScheduled: NOOP,
     DecisionTaskStarted: NOOP,
-    DecisionTaskTimedOut: NOOP,
 };

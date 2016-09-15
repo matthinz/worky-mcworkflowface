@@ -3,6 +3,7 @@ const { expect } = require('chai');
 const {
     distillEventsIntoItems,
     distillSingleItem,
+    shouldBeUnhandled,
 } = require('./helpers');
 
 const initiatedEvent = {
@@ -159,24 +160,7 @@ describe('Event Distillation - child_workflow', () => {
         });
     });
     it('StartChildWorkflowExecutionFailed', () => {
-        const item = distillSingleItem([
-            startFailedEvent,
-        ]);
-        expect(item).to.deep.equal({
-            type: 'child_workflow',
-            name: 'TestChildWorkflow',
-            version: '1.0',
-            workflowId: 'TestChildWorkflow-1',
-            canceled: false,
-            cancelRequested: false,
-            createdAt: '2016-07-29T17:07:51.518Z',
-            error: {
-                code: 'DEFAULT_EXECUTION_START_TO_CLOSE_TIMEOUT_UNDEFINED',
-                message: 'DEFAULT_EXECUTION_START_TO_CLOSE_TIMEOUT_UNDEFINED',
-            },
-            inProgress: false,
-            success: false,
-        });
+        shouldBeUnhandled([startFailedEvent]);
     });
     it('ChildWorkflowExecutionStarted', () => {
         const item = distillSingleItem([

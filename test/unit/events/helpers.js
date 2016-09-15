@@ -1,4 +1,4 @@
-const { expect } = require('chai');
+const { assert, expect } = require('chai');
 
 const { distillEventsIntoItems } = require('../../../src/events');
 
@@ -29,8 +29,20 @@ function distillSingleItem(events) {
     return checkDateProperties(items[0]);
 }
 
+function shouldBeUnhandled(events) {
+    try {
+        distillEventsIntoItems(events);
+        assert(false, 'Should have thrown EUNHANDLEDEVENT');
+    } catch (err) {
+        if (err.code !== 'EUNHANDLEDEVENT') {
+            throw err;
+        }
+    }
+}
+
 module.exports = {
     checkDateProperties,
     distillEventsIntoItems,
     distillSingleItem,
+    shouldBeUnhandled,
 };
