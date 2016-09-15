@@ -121,7 +121,6 @@ Things to note about Decider functions:
 
 - They receive two arguments: [`items`](#workflow-items) and `availableDecisions`
 - Can return one of the following:
-    + A string, which is interpreted as an activity name (with current max version number)
     + An object describing a Decision
     + An array of either of the above
 
