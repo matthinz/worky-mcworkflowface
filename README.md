@@ -11,7 +11,7 @@ Before using this, you should review:
 
 ## Getting Started
 
-  1. Register a SWF domain (if you need one needed).
+  1. Register a SWF domain (if you need one).
   2. Write some [workflows](#workflow-definition) and [activity tasks](#activity-task-definition).
   3. Call `init()` with your configuration options.
   3. Register your activity tasks and workflows.
